@@ -54,6 +54,7 @@
 </head>
 <body class="pb-20">
 
+    <!-- لوحة التحكم (مخفية) -->
     <div id="admin-panel" class="admin-modal fixed inset-0 bg-black/95 z-[999] overflow-y-auto p-4 md:p-10">
         <div class="container mx-auto max-w-6xl">
             <div class="flex justify-between items-center mb-10 border-b border-slate-800 pb-6">
@@ -67,7 +68,6 @@
                         <h3 class="text-xl font-bold mb-6 flex items-center gap-3"><i class="fas fa-images text-blue-500"></i> الصور العلوية (4)</h3>
                         <div id="hero-admin-list" class="space-y-6"></div>
                     </div>
-
                     <div class="bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-800">
                         <h3 class="text-xl font-bold mb-4 flex items-center gap-3"><i class="fas fa-tags text-blue-500"></i> الأقسام</h3>
                         <div class="flex gap-2 mb-4">
@@ -86,12 +86,10 @@
                             <input type="number" id="p-price" placeholder="السعر (د.ع)" class="bg-black/50 p-4 rounded-2xl border border-slate-800 outline-none text-white focus:border-blue-500" required>
                             <select id="p-cat" class="bg-black/50 p-4 rounded-2xl border border-slate-800 outline-none text-white focus:border-blue-500"></select>
                             <input type="text" id="p-img" placeholder="رابط صورة المنتج" class="bg-black/50 p-4 rounded-2xl border border-slate-800 outline-none text-white focus:border-blue-500" required>
-                            
                             <div class="md:col-span-2">
                                 <label class="text-xs text-slate-500 mb-2 block mr-2">الألوان (اسم:رمز) مثال: أحمر:#ff0000</label>
                                 <input type="text" id="p-colors" placeholder="أبيض:#ffffff, أسود:#000000" class="w-full bg-black/50 p-4 rounded-2xl border border-slate-800 outline-none text-white focus:border-blue-500">
                             </div>
-
                             <div class="grid grid-cols-3 gap-2 md:col-span-2">
                                 <input type="text" id="p-spec1" placeholder="التخزين" class="bg-black/50 p-4 rounded-2xl border border-slate-800 text-center outline-none text-white">
                                 <input type="text" id="p-spec2" placeholder="الرام" class="bg-black/50 p-4 rounded-2xl border border-slate-800 text-center outline-none text-white">
@@ -100,7 +98,6 @@
                             <button type="submit" class="md:col-span-2 bg-blue-600 hover:bg-blue-700 py-5 rounded-2xl font-black text-xl transition-all">حفظ ونشر المنتج</button>
                         </form>
                     </div>
-
                     <div class="bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-800">
                         <h3 class="text-xl font-bold mb-4 flex items-center gap-3"><i class="fas fa-list text-blue-500"></i> المنتجات الحالية</h3>
                         <div id="admin-product-list" class="space-y-3 max-h-[500px] overflow-y-auto pr-2"></div>
@@ -110,6 +107,7 @@
         </div>
     </div>
 
+    <!-- رأس الصفحة -->
     <header class="fixed top-0 w-full z-[100] transition-all duration-300 px-4 md:px-10 py-4" id="main-header">
         <div class="container mx-auto glass-card rounded-3xl px-6 py-4 flex justify-between items-center">
             <div onclick="requestAdmin()" class="flex items-center gap-2 cursor-pointer group">
@@ -135,10 +133,17 @@
 
     <div class="h-28"></div>
 
+    <!-- قسم الصور العلوية -->
     <section class="container mx-auto px-6 py-4">
+        <div class="flex justify-between items-center mb-6">
+            <a href="#store" class="text-blue-500 font-bold hover:underline transition-all flex items-center gap-2">
+                عرض كل المنتجات <i class="fas fa-arrow-left text-xs"></i>
+            </a>
+        </div>
         <div id="hero-grid-display" class="grid grid-cols-2 lg:grid-cols-4 gap-4 h-[500px] lg:h-[450px]"></div>
     </section>
 
+    <!-- المتجر -->
     <section class="container mx-auto px-6 py-10" id="store">
         <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-10">
             <h2 class="text-3xl font-black flex items-center gap-3">
@@ -146,9 +151,10 @@
             </h2>
             <div id="categories-tabs" class="flex gap-2 bg-slate-900/50 p-1.5 rounded-2xl border border-slate-800 overflow-x-auto max-w-full"></div>
         </div>
-        <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
+        <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8"></div>
     </section>
 
+    <!-- سلة التسوق -->
     <div id="cart-drawer" class="fixed inset-y-0 left-0 w-full md:w-[450px] bg-slate-950 z-[1000] transform -translate-x-full transition-transform duration-500 border-r border-slate-800 flex flex-col">
         <div class="p-8 border-b border-slate-800 flex justify-between items-center">
             <h3 class="text-2xl font-black">حقيبة التسوق</h3>
@@ -162,6 +168,7 @@
     </div>
     <div id="overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/80 z-[998] hidden backdrop-blur-sm"></div>
 
+    <!-- نافذة الدفع -->
     <div id="checkout-modal" class="fixed inset-0 z-[1100] hidden flex items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-slate-900 w-full max-w-lg rounded-[3rem] p-10 border border-slate-800">
             <form onsubmit="finalizeOrder(event)" class="space-y-4">
@@ -170,38 +177,29 @@
                 <input type="tel" id="c-phone" placeholder="رقم الهاتف" class="w-full p-5 bg-black/50 rounded-2xl border border-slate-800 outline-none text-white" required>
                 <textarea id="c-address" placeholder="العنوان بالتفصيل" class="w-full p-5 bg-black/50 rounded-2xl border border-slate-800 outline-none h-32 text-white" required></textarea>
                 <button type="submit" class="w-full bg-green-600 py-5 rounded-2xl font-black text-white">تأكيد عبر واتساب <i class="fab fa-whatsapp mr-2"></i></button>
-                <button type="button" onclick="closeCheckout()" class="w-full text-slate-500 mt-2">إلغاء</button>
+                <button type="button" onclick="closeCheckout()" class="w-full text-slate-500 mt-2 text-center block">إلغاء</button>
             </form>
         </div>
     </div>
 
     <script>
-        // --- إعدادات Supabase ---
         const SUPABASE_URL = 'https://nbafdhjvykgczmlcsdqn.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_cjpr15Eb8itFQ2L2jjAMwg_cvoTe_VI';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // --- البيانات المحلية المؤقتة ---
         let heroItems = [];
         let categories = [];
         let products = [];
         let cart = [];
         let currentFilter = 'all';
 
-        // --- جلب البيانات من Supabase ---
         async function fetchData() {
-            // جلب الأقسام
             let { data: catData } = await _supabase.from('categories').select('*');
             categories = catData || [{ id: 'all', name: 'الكل' }];
-            
-            // جلب المنتجات
             let { data: prodData } = await _supabase.from('products').select('*');
             products = prodData || [];
-
-            // جلب صور الهيرو
             let { data: hData } = await _supabase.from('hero_section').select('*').order('id', { ascending: true });
             heroItems = hData || [];
-
             renderAll();
         }
 
@@ -214,7 +212,6 @@
             renderStore();
         }
 
-        // --- وظائف الهيرو ---
         function renderHero() {
             document.getElementById('hero-grid-display').innerHTML = heroItems.map(item => `
                 <div class="hero-item relative rounded-[2.5rem] overflow-hidden group border border-white/5">
@@ -244,7 +241,6 @@
             fetchData();
         }
 
-        // --- وظائف الأقسام ---
         async function addCategory() {
             const name = document.getElementById('new-cat-name').value.trim();
             if(name) {
@@ -255,7 +251,7 @@
         }
 
         async function deleteCategory(id) {
-            if(confirm("حذف القسم سيؤثر على المنتجات التابعة له، هل أنت متأكد؟")) {
+            if(confirm("حذف القسم؟")) {
                 await _supabase.from('categories').delete().eq('id', id);
                 fetchData();
             }
@@ -271,7 +267,6 @@
             document.getElementById('p-cat').innerHTML = categories.filter(c => c.id !== 'all').map(c => `<option value="${c.id}">${c.name}</option>`).join('');
         }
 
-        // --- وظائف المنتجات ---
         async function handleAdminAdd(e) {
             e.preventDefault();
             const colorRaw = document.getElementById('p-colors').value;
@@ -279,7 +274,6 @@
                 const [name, code] = item.split(':');
                 return { name: name?.trim() || 'لون', code: code?.trim() || '#808080' };
             });
-
             const newP = {
                 name: document.getElementById('p-name').value,
                 price: parseInt(document.getElementById('p-price').value),
@@ -289,7 +283,6 @@
                 specs: [document.getElementById('p-spec1').value, document.getElementById('p-spec2').value, document.getElementById('p-spec3').value],
                 stock: true
             };
-            
             await _supabase.from('products').insert([newP]);
             fetchData();
             e.target.reset();
@@ -301,10 +294,7 @@
         }
 
         async function deleteProduct(id) {
-            if(confirm("حذف المنتج نهائياً؟")) {
-                await _supabase.from('products').delete().eq('id', id);
-                fetchData();
-            }
+            if(confirm("حذف المنتج؟")) { await _supabase.from('products').delete().eq('id', id); fetchData(); }
         }
 
         function renderStore() {
@@ -312,29 +302,29 @@
             let filtered = products.filter(p => currentFilter === 'all' || p.category == currentFilter);
 
             grid.innerHTML = filtered.map(p => `
-                <div class="product-card glass-card rounded-[2.5rem] p-6 flex flex-col relative" id="p-card-${p.id}">
-                    <div class="relative rounded-3xl overflow-hidden aspect-square mb-6 group bg-slate-800">
+                <div class="product-card glass-card rounded-[1.5rem] md:rounded-[2.5rem] p-3 md:p-6 flex flex-col relative" id="p-card-${p.id}">
+                    <div class="relative rounded-xl md:rounded-3xl overflow-hidden aspect-square mb-3 md:mb-6 group bg-slate-800">
                         <img src="${p.img}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ${!p.stock ? 'opacity-30 grayscale' : ''}">
-                        ${!p.stock ? '<div class="absolute inset-0 flex items-center justify-center font-black text-red-500 text-2xl rotate-12 border-4 border-red-500 m-10 rounded-xl">نـافـذ</div>' : ''}
+                        ${!p.stock ? '<div class="absolute inset-0 flex items-center justify-center font-black text-red-500 text-sm md:text-2xl rotate-12 border-2 md:border-4 border-red-500 m-4 md:m-10 rounded-lg md:rounded-xl">نـافـذ</div>' : ''}
                     </div>
                     <div class="flex-1">
-                        <h3 class="text-xl font-black text-white mb-2">${p.name}</h3>
-                        <div class="flex gap-2 mb-4">
-                            ${p.specs.filter(s => s).map(s => `<span class="bg-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-400 font-bold">${s}</span>`).join('')}
+                        <h3 class="text-sm md:text-xl font-black text-white mb-1 md:mb-2 line-clamp-1">${p.name}</h3>
+                        <div class="flex gap-1 mb-2 md:mb-4 overflow-x-auto no-scrollbar">
+                            ${p.specs.filter(s => s).map(s => `<span class="bg-slate-800 px-1.5 py-0.5 rounded-md text-[8px] md:text-[10px] text-slate-400 font-bold whitespace-nowrap">${s}</span>`).join('')}
                         </div>
-                        <div class="flex items-center gap-3 mb-6">
+                        <div class="flex items-center gap-1.5 md:gap-3 mb-3 md:mb-6">
                             ${p.colors.map((c, idx) => `
                                 <div onclick="selectColor(${p.id}, '${c.name}', this)" 
-                                     class="w-7 h-7 rounded-full cursor-pointer border-2 border-white/20 transition-all ${idx === 0 ? 'ring-2 ring-blue-500 scale-110' : ''}" 
+                                     class="w-4 h-4 md:w-7 md:h-7 rounded-full cursor-pointer border border-white/20 transition-all ${idx === 0 ? 'ring-2 ring-blue-500 scale-110' : ''}" 
                                      style="background-color: ${c.code}" 
                                      data-color-name="${c.name}"></div>
                             `).join('')}
                         </div>
                     </div>
-                    <div class="flex items-center justify-between pt-4 border-t border-white/5">
-                        <span class="text-2xl font-black text-blue-500">${p.price.toLocaleString()} <span class="text-[10px]">د.ع</span></span>
-                        <button onclick="addToCart(${p.id})" ${!p.stock ? 'disabled' : ''} class="w-12 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-xl flex items-center justify-center transition disabled:opacity-20">
-                            <i class="fas fa-plus"></i>
+                    <div class="flex items-center justify-between pt-2 md:pt-4 border-t border-white/5">
+                        <span class="text-sm md:text-2xl font-black text-blue-500">${p.price.toLocaleString()} <span class="text-[8px] md:text-[10px]">د.ع</span></span>
+                        <button onclick="addToCart(${p.id})" ${!p.stock ? 'disabled' : ''} class="w-8 h-8 md:w-12 md:h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-lg md:rounded-xl flex items-center justify-center transition disabled:opacity-20 active:scale-90">
+                            <i class="fas fa-plus text-xs md:text-base"></i>
                         </button>
                     </div>
                 </div>
@@ -358,7 +348,6 @@
             `).join('');
         }
 
-        // --- وظائف الواجهة ---
         function renderTabs() {
             document.getElementById('categories-tabs').innerHTML = categories.map(c => `
                 <button onclick="setFilter('${c.id}')" class="px-8 py-2.5 rounded-xl font-black text-xs transition-all whitespace-nowrap ${currentFilter == c.id ? 'tab-active' : 'text-slate-500 hover:bg-white/5'}">
@@ -375,7 +364,7 @@
         function closeCheckout() { document.getElementById('checkout-modal').classList.add('hidden'); }
         function selectColor(pid, cname, el) {
             const card = document.getElementById(`p-card-${pid}`);
-            card.querySelectorAll('.w-7').forEach(o => o.classList.remove('ring-2', 'ring-blue-500', 'scale-110'));
+            card.querySelectorAll('.w-4, .w-7').forEach(o => o.classList.remove('ring-2', 'ring-blue-500', 'scale-110'));
             el.classList.add('ring-2', 'ring-blue-500', 'scale-110');
         }
 
@@ -410,13 +399,31 @@
 
         function finalizeOrder(e) {
             e.preventDefault();
-            let text = `*طلب جديد من NeWcODe*%0A%0A👤 الاسم: ${document.getElementById('c-name').value}%0A📞 الهاتف: ${document.getElementById('c-phone').value}%0A📦 الطلبات:%0A`;
-            cart.forEach((i, idx) => text += `${idx+1}. ${i.name} (${i.chosenColor})%0A`);
-            text += `%0A💰 الإجمالي: *${document.getElementById('cart-total').innerText}*`;
+            const name = document.getElementById('c-name').value;
+            const phone = document.getElementById('c-phone').value;
+            const address = document.getElementById('c-address').value;
+            const total = document.getElementById('cart-total').innerText;
+
+            let text = `*طلب جديد من متجر NeWcODe*%0A`;
+            text += `---------------------------%0A`;
+            text += `🛍️ *قائمة الطلبات:*%0A`;
+            
+            cart.forEach((i, idx) => {
+                text += `${idx + 1}- ${i.name} (${i.chosenColor}) (${i.price.toLocaleString()} د.ع)%0A`;
+            });
+
+            text += `---------------------------%0A`;
+            text += `💰 *المجموع الإجمالي:* ${total}%0A%0A`;
+            text += `👤 *معلومات الزبون:*%0A`;
+            text += `📍 الاسم: ${name}%0A`;
+            text += `📞 الهاتف: ${phone}%0A`;
+            text += `🏠 العنوان: ${address}%0A%0A`;
+            text += `_تم الإرسال من الموقع الإلكتروني_`;
+
+            // إرسال عبر واتساب (رقمك المخصص)
             window.open(`https://wa.me/9647734460390?text=${text}`);
         }
 
-        // تشغيل الجلب عند التحميل
         window.onload = fetchData;
     </script>
 </body>
