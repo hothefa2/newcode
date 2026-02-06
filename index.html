@@ -146,6 +146,17 @@
         </div>
     </div>
 
+    <div id="product-modal" class="hidden fixed inset-0 z-[1500] flex items-center justify-center p-4 backdrop-blur-xl bg-black/40">
+        <div class="bg-slate-900 w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[3rem] border border-white/10 shadow-2xl relative">
+            <button onclick="closeProductModal()" class="absolute top-6 left-6 w-12 h-12 bg-white/10 hover:bg-red-500 rounded-full flex items-center justify-center transition-all z-10">
+                <i class="fas fa-times text-xl text-white"></i>
+            </button>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 md:p-10" id="modal-content">
+                </div>
+        </div>
+    </div>
+
     <header class="fixed top-0 w-full z-[100] px-4 md:px-10 py-4">
         <div class="container mx-auto glass-card rounded-3xl px-6 py-4 flex justify-between items-center">
             <div onclick="requestAdmin()" class="flex items-center gap-2 cursor-pointer group">
@@ -223,7 +234,6 @@
 
         const EMOJI_LIST = ['📱','💻','🎮','🎧','⌚️','📷','📺','🔋','🖱️','⌨️','🍎','🤖','🔥','⭐','📦','🔌','🛠️','💡','🛍️','💰','📚','✏️','🖋️','🖌️','📏','📁','🏠','🏢','🚗','🚲','👕','👟','👓','⌚','💎','⚽','🏀','🎸','🎵','🎨','🚀','🚁','🛸','🛰️','🌈','🌊','🌍','🍕','☕','🍦'];
         
-        // مصفوفة الـ 100 لون المحدثة
         const MASTER_COLORS = [
             { name: 'أزرق سييرا', code: '#97B1C6' }, { name: 'رصاصي داكن', code: '#545452' }, { name: 'ذهبي', code: '#FAE7CF' }, { name: 'فضي', code: '#F1F2ED' }, { name: 'أخضر غابة', code: '#576856' }, { name: 'أزرق', code: '#A0B4C7' }, { name: 'أرجواني', code: '#E5DCEA' }, { name: 'أصفر', code: '#F9E479' }, { name: 'سماء الليل', code: '#1F252E' }, { name: 'ضوء النجوم', code: '#FAF7F2' }, { name: 'أحمر', code: '#BA0C2F' }, { name: 'تيتانيوم طبيعي', code: '#BEBDB8' }, { name: 'تيتانيوم أزرق', code: '#424855' }, { name: 'تيتانيوم أبيض', code: '#F2F1ED' }, { name: 'تيتانيوم أسود', code: '#454442' }, { name: 'برونزي', code: '#CD7F32' }, { name: 'أسود فاحم', code: '#000000' }, { name: 'رمادي فاتح', code: '#D3D3D3' }, { name: 'رمادي متوسط', code: '#808080' }, { name: 'رمادي صخري', code: '#708090' },
             { name: 'رمادي لؤلؤي', code: '#E5E4E2' }, { name: 'فضي معدني', code: '#C0C0C0' }, { name: 'رمادي بارد', code: '#91A3B0' }, { name: 'رمادي دافئ', code: '#A5A5A5' }, { name: 'أزرق ملكي', code: '#4169E1' }, { name: 'أزرق بحري', code: '#000080' }, { name: 'أزرق فاتح', code: '#ADD8E6' }, { name: 'أزرق نيلي', code: '#4B0082' }, { name: 'أزرق فيروزي', code: '#40E0D0' }, { name: 'أزرق سماوي', code: '#87CEEB' }, { name: 'أزرق مائي', code: '#00FFFF' }, { name: 'أزرق بترولي', code: '#005F6B' }, { name: 'أزرق كوبالت', code: '#0047AB' }, { name: 'أزرق منتصف الليل', code: '#191970' }, { name: 'أخضر زمردي', code: '#50C878' }, { name: 'أخضر ليموني', code: '#32CD32' }, { name: 'أخضر زيتوني', code: '#808000' }, { name: 'أخضر نعناعي', code: '#98FB98' }, { name: 'أخضر داكن', code: '#006400' }, { name: 'أخضر عشبي', code: '#7CFC00' },
@@ -235,6 +245,7 @@
         let heroItems = []; let categories = []; let products = []; let cart = []; 
         let currentFilter = 'all';
         let maxPrice = 3000000;
+        let selectedColorForCart = null;
 
         async function fetchData() {
             try {
@@ -259,6 +270,101 @@
             renderStore(); 
         }
 
+        // --- وظائف عرض المتجر ---
+        function renderStore() {
+            const grid = document.getElementById('products-grid');
+            let filtered = products.filter(p => (currentFilter === 'all' || p.category == currentFilter) && p.price <= maxPrice);
+            
+            grid.innerHTML = filtered.map(p => `
+                <div onclick="openProductModal(${p.id})" class="product-card glass-card rounded-[1.5rem] p-4 flex flex-col relative group">
+                    <div class="relative rounded-2xl overflow-hidden aspect-square mb-4 bg-slate-800">
+                        <img src="${p.img}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${!p.stock ? 'opacity-30 grayscale' : ''}">
+                        ${!p.stock ? '<div class="absolute inset-0 flex items-center justify-center font-black text-red-500 text-xl rotate-12 border-2 border-red-500 m-6 rounded-xl">نـافـذ</div>' : ''}
+                    </div>
+                    <h3 class="text-lg font-black text-white mb-2 text-right">${p.name}</h3>
+                    <div class="flex flex-wrap justify-end gap-1 mb-4">
+                        ${p.specs.filter(s => s).map(s => `<span class="bg-slate-800 px-2 py-0.5 rounded text-[10px] text-slate-400 font-bold">${s}</span>`).join('')}
+                    </div>
+                    <div class="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
+                        <span class="text-xl font-black text-blue-500">${p.price.toLocaleString()} <span class="text-[10px]">د.ع</span></span>
+                        <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white"><i class="fas fa-eye"></i></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- وظائف نافذة تفاصيل المنتج ---
+        function openProductModal(id) {
+            const p = products.find(prod => prod.id === id);
+            if (!p) return;
+
+            selectedColorForCart = p.colors.find(c => !c.outOfStock)?.name || "افتراضي";
+            
+            const modal = document.getElementById('product-modal');
+            const content = document.getElementById('modal-content');
+            
+            content.innerHTML = `
+                <div class="rounded-3xl overflow-hidden bg-black/20 p-4 flex items-center justify-center">
+                    <img src="${p.img}" class="w-full h-auto max-h-[400px] object-contain rounded-2xl">
+                </div>
+                <div class="text-right flex flex-col">
+                    <div class="mb-6">
+                        <span class="bg-blue-600/20 text-blue-400 px-4 py-1 rounded-full text-xs font-bold">تفاصيل المنتج</span>
+                        <h2 class="text-3xl font-black text-white mt-4">${p.name}</h2>
+                        <p class="text-3xl font-black text-blue-500 mt-2">${p.price.toLocaleString()} د.ع</p>
+                    </div>
+
+                    <div class="space-y-4 mb-8">
+                        <h4 class="text-slate-400 font-bold text-sm">المواصفات التقنية:</h4>
+                        <div class="grid grid-cols-1 gap-2">
+                            ${p.specs.filter(s => s).map(s => `
+                                <div class="bg-white/5 p-3 rounded-xl flex justify-between items-center flex-row-reverse">
+                                    <i class="fas fa-check-circle text-blue-500"></i>
+                                    <span class="text-slate-200 font-medium">${s}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <h4 class="text-slate-400 font-bold text-sm mb-4">الألوان المتوفرة:</h4>
+                        <div class="flex flex-wrap justify-end gap-3">
+                            ${p.colors.map(c => `
+                                <button onclick="selectColor('${c.name}', this)" 
+                                        ${c.outOfStock ? 'disabled' : ''}
+                                        class="color-opt group relative flex flex-col items-center gap-2 ${c.outOfStock ? 'opacity-20 cursor-not-allowed' : ''}">
+                                    <div class="w-10 h-10 rounded-full border-2 ${selectedColorForCart === c.name ? 'border-white scale-110 shadow-[0_0_15px_rgba(255,255,255,0.3)]' : 'border-transparent'} p-0.5 transition-all">
+                                        <div class="w-full h-full rounded-full" style="background-color: ${c.code}"></div>
+                                    </div>
+                                    <span class="text-[10px] text-slate-400">${c.name}</span>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <button onclick="addToCart(${p.id}, true)" ${!p.stock ? 'disabled' : ''} 
+                            class="w-full bg-blue-600 hover:bg-blue-700 py-5 rounded-2xl font-black text-xl transition-all flex items-center justify-center gap-3">
+                        <i class="fas fa-cart-plus"></i>
+                        إضافة إلى الحقيبة
+                    </button>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function selectColor(name, el) {
+            selectedColorForCart = name;
+            document.querySelectorAll('.color-opt div').forEach(d => d.classList.remove('border-white', 'scale-110', 'shadow-[0_0_15px_rgba(255,255,255,0.3)]'));
+            el.querySelector('div').classList.add('border-white', 'scale-110', 'shadow-[0_0_15px_rgba(255,255,255,0.3)]');
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
         function renderTabs() { 
             document.getElementById('categories-tabs').innerHTML = categories.map(c => `
                 <button onclick="setFilter('${c.id}')" class="category-card group ${currentFilter == c.id ? 'tab-active' : ''}">
@@ -270,28 +376,6 @@
 
         function setFilter(id) { currentFilter = id; renderTabs(); renderStore(); }
         function updatePriceFilter(val) { maxPrice = parseInt(val); document.getElementById('price-display').innerText = maxPrice >= 3000000 ? "الكل" : "حتى " + maxPrice.toLocaleString() + " د.ع"; renderStore(); }
-
-        function renderStore() {
-            const grid = document.getElementById('products-grid');
-            let filtered = products.filter(p => (currentFilter === 'all' || p.category == currentFilter) && p.price <= maxPrice);
-            
-            grid.innerHTML = filtered.map(p => `
-                <div class="product-card glass-card rounded-[1.5rem] p-4 flex flex-col relative" id="p-card-${p.id}">
-                    <div class="relative rounded-2xl overflow-hidden aspect-square mb-4 bg-slate-800">
-                        <img src="${p.img}" class="w-full h-full object-cover ${!p.stock ? 'opacity-30 grayscale' : ''}">
-                        ${!p.stock ? '<div class="absolute inset-0 flex items-center justify-center font-black text-red-500 text-xl rotate-12 border-2 border-red-500 m-6 rounded-xl">نـافـذ</div>' : ''}
-                    </div>
-                    <h3 class="text-lg font-black text-white mb-2 text-right">${p.name}</h3>
-                    <div class="flex flex-wrap justify-end gap-1 mb-4">
-                        ${p.specs.filter(s => s).map(s => `<span class="bg-slate-800 px-2 py-0.5 rounded text-[10px] text-slate-400 font-bold">${s}</span>`).join('')}
-                    </div>
-                    <div class="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
-                        <span class="text-xl font-black text-blue-500">${p.price.toLocaleString()} <span class="text-[10px]">د.ع</span></span>
-                        <button onclick="addToCart(${p.id})" ${!p.stock ? 'disabled' : ''} class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white active:scale-90 transition disabled:opacity-20"><i class="fas fa-plus"></i></button>
-                    </div>
-                </div>
-            `).join('');
-        }
 
         function renderHero() {
             document.getElementById('hero-grid-display').innerHTML = heroItems.map(item => `
@@ -306,6 +390,58 @@
             `).join('');
         }
 
+        // --- وظائف السلة ---
+        function addToCart(id, fromModal = false) {
+            const product = products.find(p => p.id === id);
+            const color = fromModal ? selectedColorForCart : (product.colors.find(c => !c.outOfStock)?.name || "افتراضي");
+            
+            cart.push({...product, cartId: Date.now(), chosenColor: color});
+            updateCartUI();
+            
+            if(fromModal) {
+                closeProductModal();
+                toggleCart(); 
+            }
+        }
+
+        function updateCartUI() {
+            document.getElementById('cart-count').innerText = cart.length;
+            const content = document.getElementById('cart-content');
+            let total = 0;
+            content.innerHTML = cart.map(i => {
+                total += i.price;
+                return `<div class="flex gap-4 bg-slate-900/50 p-4 rounded-2xl border border-white/5 items-center">
+                    <button onclick="removeFromCart(${i.cartId})" class="text-red-500"><i class="fas fa-trash"></i></button>
+                    <div class="flex-1 text-right">
+                        <h4 class="font-bold text-white">${i.name}</h4>
+                        <p class="text-blue-400 text-xs">${i.chosenColor}</p>
+                        <p class="font-black text-white">${i.price.toLocaleString()} د.ع</p>
+                    </div>
+                    <img src="${i.img}" class="w-16 h-16 rounded-xl object-cover">
+                </div>`;
+            }).join('');
+            document.getElementById('cart-total').innerText = total.toLocaleString() + ' د.ع';
+            document.getElementById('order-btn').disabled = cart.length === 0;
+        }
+
+        function removeFromCart(cid) { cart = cart.filter(i => i.cartId !== cid); updateCartUI(); }
+        function toggleCart() { document.getElementById('cart-drawer').classList.toggle('-translate-x-full'); document.getElementById('overlay').classList.toggle('hidden'); }
+        function openCheckout() { document.getElementById('checkout-modal').classList.remove('hidden'); }
+        function closeCheckout() { document.getElementById('checkout-modal').classList.add('hidden'); }
+
+        function finalizeOrder(e) {
+            e.preventDefault();
+            const name = document.getElementById('c-name').value;
+            const phone = document.getElementById('c-phone').value;
+            const address = document.getElementById('c-address').value;
+            let text = `*طلب جديد من NeWcODe*%0A---------------------------%0A🛍️ *الطلبات:*%0A`;
+            cart.forEach((i, idx) => text += `${idx + 1}- ${i.name} [اللون: ${i.chosenColor}] (${i.price.toLocaleString()} د.ع)%0A`);
+            text += `---------------------------%0Aالمجموع: ${document.getElementById('cart-total').innerText}%0A%0A👤 الزبون: ${name}%0A📞 الهاتف: ${phone}%0A📍 العنوان: ${address}`;
+            window.open(`https://wa.me/9647734460390?text=${text}`);
+            cart = []; updateCartUI(); closeCheckout(); toggleCart();
+        }
+
+        // --- وظائف لوحة التحكم ---
         function renderAdminProductList() {
             const list = document.getElementById('admin-product-list');
             if(!list) return;
@@ -436,52 +572,8 @@
         }
         async function updateHero(id, field, value) { await _supabase.from('hero_section').update({ [field]: value }).eq('id', id); fetchData(); }
 
-        function toggleCart() { document.getElementById('cart-drawer').classList.toggle('-translate-x-full'); document.getElementById('overlay').classList.toggle('hidden'); }
         function requestAdmin() { if (prompt("الرمز:") === "1905") document.getElementById('admin-panel').classList.remove('hidden'); }
         function closeAdmin() { document.getElementById('admin-panel').classList.add('hidden'); }
-
-        function addToCart(id) {
-            const product = products.find(p => p.id === id);
-            const chosenColor = product.colors.find(c => !c.outOfStock)?.name || "افتراضي";
-            cart.push({...product, cartId: Date.now(), chosenColor});
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            document.getElementById('cart-count').innerText = cart.length;
-            const content = document.getElementById('cart-content');
-            let total = 0;
-            content.innerHTML = cart.map(i => {
-                total += i.price;
-                return `<div class="flex gap-4 bg-slate-900/50 p-4 rounded-2xl border border-white/5 items-center">
-                    <button onclick="removeFromCart(${i.cartId})" class="text-red-500"><i class="fas fa-trash"></i></button>
-                    <div class="flex-1 text-right">
-                        <h4 class="font-bold text-white">${i.name}</h4>
-                        <p class="text-blue-400 text-xs">${i.chosenColor}</p>
-                        <p class="font-black text-white">${i.price.toLocaleString()} د.ع</p>
-                    </div>
-                    <img src="${i.img}" class="w-16 h-16 rounded-xl object-cover">
-                </div>`;
-            }).join('');
-            document.getElementById('cart-total').innerText = total.toLocaleString() + ' د.ع';
-            document.getElementById('order-btn').disabled = cart.length === 0;
-        }
-
-        function removeFromCart(cid) { cart = cart.filter(i => i.cartId !== cid); updateCartUI(); }
-        function openCheckout() { document.getElementById('checkout-modal').classList.remove('hidden'); }
-        function closeCheckout() { document.getElementById('checkout-modal').classList.add('hidden'); }
-
-        function finalizeOrder(e) {
-            e.preventDefault();
-            const name = document.getElementById('c-name').value;
-            const phone = document.getElementById('c-phone').value;
-            const address = document.getElementById('c-address').value;
-            let text = `*طلب جديد من NeWcODe*%0A---------------------------%0A🛍️ *الطلبات:*%0A`;
-            cart.forEach((i, idx) => text += `${idx + 1}- ${i.name} (${i.price.toLocaleString()} د.ع)%0A`);
-            text += `---------------------------%0Aالمجموع: ${document.getElementById('cart-total').innerText}%0A%0A👤 الزبون: ${name}%0A📞 الهاتف: ${phone}%0A📍 العنوان: ${address}`;
-            window.open(`https://wa.me/9647734460390?text=${text}`);
-            cart = []; updateCartUI(); closeCheckout(); toggleCart();
-        }
 
         window.onload = fetchData;
     </script>
