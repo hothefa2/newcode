@@ -60,9 +60,9 @@
             transform: translateY(-5px);
         }
 
-        .category-card.tab-active span {
-            color: white !important;
-        }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: var(--primary); cursor: pointer; margin-top: -6px; box-shadow: 0 0 10px var(--primary); }
 
         .hero-item { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
         .hero-item:hover { transform: scale(1.03) translateY(-10px); box-shadow: 0 0 30px rgba(59, 130, 246, 0.3); }
@@ -70,56 +70,18 @@
         .product-card { transition: all 0.4s ease; cursor: pointer; }
         .product-card:hover { border-color: var(--primary); box-shadow: 0 20px 40px -20px rgba(59, 130, 246, 0.5); }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-
-        .admin-modal { display: none; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        @keyframes pulse-border {
-            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-        }
-        .active-dot { animation: pulse-border 2s infinite; }
-
-        .emoji-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-            gap: 5px;
-            max-height: 150px;
-            overflow-y: auto;
-            background: rgba(0,0,0,0.3);
-            padding: 10px;
-            border-radius: 15px;
-        }
-        .emoji-btn {
-            font-size: 1.5rem;
-            padding: 5px;
-            border-radius: 10px;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
+        .emoji-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 5px; max-height: 150px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 15px; }
+        .emoji-btn { font-size: 1.5rem; padding: 5px; border-radius: 10px; transition: all 0.2s; cursor: pointer; text-align: center; }
         .emoji-btn:hover { background: rgba(59, 130, 246, 0.3); }
         .emoji-btn.selected { background: var(--primary); border: 2px solid white; }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="pb-20">
 
-    <div id="product-modal" class="fixed inset-0 z-[1200] hidden flex items-center justify-center p-4 backdrop-blur-xl bg-black/60">
-        <div class="bg-slate-900 w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[2rem] md:rounded-[3.5rem] border border-white/10 shadow-2xl relative">
-            <button onclick="closeProductModal()" class="absolute top-6 left-6 w-12 h-12 bg-white/10 hover:bg-red-500 rounded-full flex items-center justify-center transition z-10">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-            
-            <div id="modal-content" class="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 md:p-12">
-                </div>
-        </div>
-    </div>
-
-    <div id="admin-panel" class="admin-modal fixed inset-0 bg-black/95 z-[999] overflow-y-auto p-4 md:p-10">
+    <div id="admin-panel" class="hidden fixed inset-0 bg-black/95 z-[2000] overflow-y-auto p-4 md:p-10">
         <div class="container mx-auto max-w-6xl">
             <div class="flex justify-between items-center mb-10 border-b border-slate-800 pb-6">
                 <h2 class="text-4xl font-black text-white italic">لوحة التحكم <span class="text-blue-500">PRO</span></h2>
@@ -128,53 +90,55 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="space-y-8">
-                    <div class="bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-800">
-                        <h3 class="text-xl font-bold mb-4 flex items-center gap-3"><i class="fas fa-tags text-blue-500"></i> إدارة الأقسام</h3>
+                    <div class="bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-800 text-right">
+                        <h3 class="text-xl font-bold mb-4 flex items-center justify-end gap-3"><i class="fas fa-tags text-blue-500"></i> إدارة الأقسام</h3>
                         <div class="space-y-4 mb-6 p-4 bg-black/40 rounded-2xl border border-white/5">
                             <input type="hidden" id="edit-cat-id" value="">
                             <input type="text" id="new-cat-name" placeholder="اسم القسم" class="w-full bg-slate-800 p-3 rounded-xl border border-slate-700 outline-none text-white">
-                            <label class="text-xs font-bold text-slate-400">اختر ملصق (Emoji):</label>
+                            <label class="text-xs font-bold text-slate-400 block mb-2">اختر ملصق (Emoji):</label>
                             <div id="emoji-picker" class="emoji-grid no-scrollbar"></div>
                             <input type="hidden" id="selected-emoji" value="📦">
-                            <button id="save-cat-btn" onclick="addCategory()" class="w-full bg-blue-600 py-3 rounded-xl text-white font-bold hover:bg-blue-700 transition">إضافة قسم جديد</button>
-                            <button id="cancel-cat-edit" onclick="resetCatForm()" class="hidden w-full bg-slate-700 py-3 rounded-xl text-white font-bold">إلغاء التعديل</button>
+                            <button id="save-cat-btn" onclick="addCategory()" class="w-full bg-blue-600 py-3 rounded-xl text-white font-bold hover:bg-blue-700 transition">إضافة قسم</button>
                         </div>
-                        <div id="admin-cat-list" class="space-y-2 max-h-60 overflow-y-auto pr-2"></div>
+                        <div id="admin-cat-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
                     </div>
 
-                    <div class="bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-800">
-                        <h3 class="text-xl font-bold mb-6 flex items-center gap-3"><i class="fas fa-images text-blue-500"></i> الصور العلوية</h3>
-                        <div id="hero-admin-list" class="space-y-6"></div>
+                    <div class="bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-800 text-right">
+                        <h3 class="text-xl font-bold mb-6 flex items-center justify-end gap-3"><i class="fas fa-images text-blue-500"></i> الصور العلوية</h3>
+                        <div id="hero-admin-list" class="space-y-4"></div>
                     </div>
                 </div>
 
                 <div class="lg:col-span-2 space-y-8">
-                    <div class="bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-800">
-                        <h3 id="form-title" class="text-xl font-bold mb-6 flex items-center gap-3"><i class="fas fa-plus-circle text-blue-500"></i> إضافة منتج جديد</h3>
+                    <div class="bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-800 text-right">
+                        <h3 id="form-title" class="text-xl font-bold mb-6 flex items-center justify-end gap-3"><i class="fas fa-plus-circle text-blue-500"></i> إضافة منتج جديد</h3>
                         <form onsubmit="handleAdminSubmit(event)" id="product-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <input type="hidden" id="p-id" value="">
                             <input type="text" id="p-name" placeholder="اسم الجهاز" class="bg-black/50 p-4 rounded-2xl border border-slate-800 outline-none text-white focus:border-blue-500" required>
                             <input type="number" id="p-price" placeholder="السعر (د.ع)" class="bg-black/50 p-4 rounded-2xl border border-slate-800 outline-none text-white focus:border-blue-500" required>
                             <select id="p-cat" class="bg-black/50 p-4 rounded-2xl border border-slate-800 outline-none text-white focus:border-blue-500"></select>
                             <input type="text" id="p-img" placeholder="رابط صورة المنتج" class="bg-black/50 p-4 rounded-2xl border border-slate-800 outline-none text-white focus:border-blue-500" required>
+                            
                             <div class="md:col-span-2">
-                                <label class="text-xs font-bold text-slate-400 mb-3 block mr-2">اختر الألوان المتوفرة:</label>
-                                <div id="color-picker-admin" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 bg-black/30 p-4 rounded-3xl border border-slate-800 max-h-48 overflow-y-auto"></div>
+                                <label class="text-xs font-bold text-slate-400 mb-3 block">اختر الألوان المتوفرة (100 لون):</label>
+                                <div id="color-picker-admin" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 bg-black/30 p-4 rounded-3xl border border-slate-800 max-h-60 overflow-y-auto"></div>
                             </div>
+
                             <div class="grid grid-cols-3 gap-2 md:col-span-2 mt-2">
                                 <input type="text" id="p-spec1" placeholder="التخزين" class="bg-black/50 p-4 rounded-2xl border border-slate-800 text-center outline-none text-white">
                                 <input type="text" id="p-spec2" placeholder="الرام" class="bg-black/50 p-4 rounded-2xl border border-slate-800 text-center outline-none text-white">
                                 <input type="text" id="p-spec3" placeholder="المعالج" class="bg-black/50 p-4 rounded-2xl border border-slate-800 text-center outline-none text-white">
                             </div>
+                            
                             <div class="md:col-span-2 flex gap-3">
-                                <button type="submit" id="submit-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 py-5 rounded-2xl font-black text-xl transition-all shadow-lg shadow-blue-900/20 mt-4">حفظ ونشر المنتج</button>
+                                <button type="submit" id="submit-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 py-5 rounded-2xl font-black text-xl transition-all shadow-lg shadow-blue-900/20 mt-4">حفظ المنتج</button>
                                 <button type="button" onclick="resetProductForm()" id="cancel-edit-btn" class="hidden bg-slate-700 hover:bg-slate-600 py-5 px-8 rounded-2xl font-black text-xl transition-all mt-4">إلغاء</button>
                             </div>
                         </form>
                     </div>
 
-                    <div class="bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-800">
-                        <h3 class="text-xl font-bold mb-4 flex items-center gap-3"><i class="fas fa-list text-blue-500"></i> إدارة المنتجات والمخزون</h3>
+                    <div class="bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-800 text-right">
+                        <h3 class="text-xl font-bold mb-4 flex items-center justify-end gap-3"><i class="fas fa-list text-blue-500"></i> المنتجات الحالية</h3>
                         <div id="admin-product-list" class="space-y-4 max-h-[600px] overflow-y-auto pr-2"></div>
                     </div>
                 </div>
@@ -182,7 +146,7 @@
         </div>
     </div>
 
-    <header class="fixed top-0 w-full z-[100] px-4 md:px-10 py-4" id="main-header">
+    <header class="fixed top-0 w-full z-[100] px-4 md:px-10 py-4">
         <div class="container mx-auto glass-card rounded-3xl px-6 py-4 flex justify-between items-center">
             <div onclick="requestAdmin()" class="flex items-center gap-2 cursor-pointer group">
                 <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center group-hover:rotate-12 transition">
@@ -190,18 +154,12 @@
                 </div>
                 <h1 class="text-2xl font-black tracking-tighter">NE<span class="text-blue-500">WcODe</span></h1>
             </div>
-            <div class="flex items-center gap-6">
-                <div class="hidden md:flex items-center gap-8 text-sm font-bold text-slate-400">
-                    <a href="#" class="hover:text-blue-500 transition">الرئيسية</a>
-                    <a href="#store" class="hover:text-blue-500 transition">المتجر</a>
+            <button onclick="toggleCart()" class="relative group">
+                <div class="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center group-hover:bg-blue-600 transition-all">
+                    <i class="fas fa-shopping-bag text-lg"></i>
                 </div>
-                <button onclick="toggleCart()" class="relative group">
-                    <div class="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center group-hover:bg-blue-600 transition-all">
-                        <i class="fas fa-shopping-bag text-lg"></i>
-                    </div>
-                    <span id="cart-count" class="absolute -top-1 -right-1 bg-blue-500 text-[10px] w-6 h-6 rounded-full flex items-center justify-center border-2 border-slate-900 font-bold">0</span>
-                </button>
-            </div>
+                <span id="cart-count" class="absolute -top-1 -right-1 bg-blue-500 text-[10px] w-6 h-6 rounded-full flex items-center justify-center border-2 border-slate-900 font-bold">0</span>
+            </button>
         </div>
     </header>
 
@@ -212,13 +170,24 @@
     </section>
 
     <section class="container mx-auto px-6 py-10" id="store">
-        <div class="flex flex-col gap-8 mb-10">
-            <h2 class="text-3xl font-black flex items-center gap-3">
-                <span class="w-2 h-8 bg-blue-600 rounded-full active-dot"></span> الأقسام
-            </h2>
-            <div id="categories-tabs" class="flex gap-4 overflow-x-auto no-scrollbar py-4 px-2"></div>
+        <div class="glass-card rounded-[2.5rem] p-6 md:p-10 mb-12 border border-white/5">
+            <div class="flex flex-col lg:flex-row gap-10 items-end">
+                <div class="flex-1 w-full text-right">
+                    <h3 class="text-xs font-bold text-slate-500 mb-4 uppercase tracking-widest">تصفح الأقسام</h3>
+                    <div id="categories-tabs" class="flex gap-4 overflow-x-auto no-scrollbar pb-2"></div>
+                </div>
+                
+                <div class="w-full lg:w-72 bg-black/30 p-6 rounded-3xl border border-white/5 text-right">
+                    <div class="flex justify-between items-center mb-4">
+                        <span id="price-display" class="text-sm font-black text-white">الكل</span>
+                        <h3 class="text-xs font-bold text-blue-500 uppercase">ميزانيتك</h3>
+                    </div>
+                    <input type="range" id="price-range" min="0" max="3000000" step="50000" value="3000000" oninput="updatePriceFilter(this.value)">
+                </div>
+            </div>
         </div>
-        <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8"></div>
+
+        <div id="products-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8"></div>
     </section>
 
     <div id="cart-drawer" class="fixed inset-y-0 left-0 w-full md:w-[450px] bg-slate-950 z-[1000] transform -translate-x-full transition-transform duration-500 border-r border-slate-800 flex flex-col">
@@ -228,19 +197,19 @@
         </div>
         <div id="cart-content" class="flex-1 overflow-y-auto p-8 space-y-6"></div>
         <div class="p-8 bg-slate-900/50 border-t border-slate-800">
-            <div class="flex justify-between mb-8"><span class="text-slate-400">الإجمالي</span><span id="cart-total" class="text-3xl font-black text-blue-500">0 د.ع</span></div>
+            <div class="flex justify-between mb-8"><span id="cart-total" class="text-3xl font-black text-blue-500">0 د.ع</span><span class="text-slate-400">الإجمالي</span></div>
             <button onclick="openCheckout()" id="order-btn" disabled class="w-full bg-blue-600 py-5 rounded-2xl font-black">إتمام الطلب</button>
         </div>
     </div>
     <div id="overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/80 z-[998] hidden backdrop-blur-sm"></div>
 
-    <div id="checkout-modal" class="fixed inset-0 z-[1100] hidden flex items-center justify-center p-4 backdrop-blur-md">
+    <div id="checkout-modal" class="hidden fixed inset-0 z-[1100] flex items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-slate-900 w-full max-w-lg rounded-[3rem] p-10 border border-slate-800 shadow-2xl">
             <form id="order-form" onsubmit="finalizeOrder(event)" class="space-y-4">
                 <h3 class="text-2xl font-black text-center mb-6">بيانات التوصيل</h3>
-                <input type="text" id="c-name" placeholder="الاسم الكامل" class="w-full p-5 bg-black/50 rounded-2xl border border-slate-800 outline-none text-white" required>
-                <input type="tel" id="c-phone" placeholder="رقم الهاتف" class="w-full p-5 bg-black/50 rounded-2xl border border-slate-800 outline-none text-white" required>
-                <textarea id="c-address" placeholder="العنوان بالتفصيل" class="w-full p-5 bg-black/50 rounded-2xl border border-slate-800 outline-none h-32 text-white" required></textarea>
+                <input type="text" id="c-name" placeholder="الاسم الكامل" class="w-full p-5 bg-black/50 rounded-2xl border border-slate-800 outline-none text-white text-right" required>
+                <input type="tel" id="c-phone" placeholder="رقم الهاتف" class="w-full p-5 bg-black/50 rounded-2xl border border-slate-800 outline-none text-white text-right" required>
+                <textarea id="c-address" placeholder="العنوان بالتفصيل" class="w-full p-5 bg-black/50 rounded-2xl border border-slate-800 outline-none h-32 text-white text-right" required></textarea>
                 <button type="submit" class="w-full bg-green-600 py-5 rounded-2xl font-black text-white">تأكيد عبر واتساب <i class="fab fa-whatsapp mr-2"></i></button>
                 <button type="button" onclick="closeCheckout()" class="w-full text-slate-500 mt-2 text-center block">إلغاء</button>
             </form>
@@ -253,18 +222,30 @@
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const EMOJI_LIST = ['📱','💻','🎮','🎧','⌚️','📷','📺','🔋','🖱️','⌨️','🍎','🤖','🔥','⭐','📦','🔌','🛠️','💡','🛍️','💰','📚','✏️','🖋️','🖌️','📏','📁','🏠','🏢','🚗','🚲','👕','👟','👓','⌚','💎','⚽','🏀','🎸','🎵','🎨','🚀','🚁','🛸','🛰️','🌈','🌊','🌍','🍕','☕','🍦'];
-        const MASTER_COLORS = [{ name: 'أزرق سييرا', code: '#97B1C6' }, { name: 'رصاصي داكن', code: '#545452' }, { name: 'ذهبي', code: '#FAE7CF' }, { name: 'فضي', code: '#F1F2ED' }, { name: 'أخضر غابة', code: '#576856' }, { name: 'أزرق', code: '#A0B4C7' }, { name: 'أرجواني', code: '#E5DCEA' }, { name: 'أصفر', code: '#F9E479' }, { name: 'سماء الليل', code: '#1F252E' }, { name: 'ضوء النجوم', code: '#FAF7F2' }, { name: 'أحمر', code: '#BA0C2F' }, { name: 'تيتانيوم', code: '#a0a0a0' }, { name: 'أسود', code: '#000000' }, { name: 'أبيض', code: '#ffffff' }, { name: 'تيتانيوم طبيعي', code: '#BEBDB8' }, { name: 'تيتانيوم أزرق', code: '#424855' }, { name: 'تيتانيوم أبيض', code: '#F2F1ED' }, { name: 'تيتانيوم أسود', code: '#454442' }, { name: 'ليلكي', code: '#D1D1E0' }, { name: 'أخضر نعناعي', code: '#ADF7D1' }, { name: 'وردي', code: '#F7C6D9' }, { name: 'برتقالي', code: '#FF8C00' }, { name: 'بني شوكولاتة', code: '#4B2C20' }, { name: 'كحلي', code: '#000080' }, { name: 'أخضر زيتوني', code: '#556B2F' }, { name: 'فيروزي', code: '#40E0D0' }, { name: 'بيج', code: '#F5F5DC' }, { name: 'رمادي فاتح', code: '#D3D3D3' }, { name: 'بنفسجي داكن', code: '#4B0082' }, { name: 'أزرق ملكي', code: '#4169E1' }, { name: 'مرجاني', code: '#FF7F50' }, { name: 'زمردي', code: '#50C878' }, { name: 'خزامي', code: '#E6E6FA' }, { name: 'ياقوتي', code: '#E0115F' }, { name: 'نحاسي', code: '#B87333' }, { name: 'برونزي', code: '#CD7F32' }, { name: 'كريمي', code: '#FFFDD0' }, { name: 'أزرق ثلجي', code: '#F0F8FF' }, { name: 'أخضر ليموني', code: '#32CD32' }, { name: 'أصفر كناري', code: '#FFEF00' }, { name: 'أزرق مخضر', code: '#008080' }, { name: 'وردي غامق', code: '#FF1493' }, { name: 'رملي', code: '#C2B280' }, { name: 'رمادي حجري', code: '#808080' }, { name: 'أرجواني فاتح', code: '#DA70D6' }, { name: 'سماوي', code: '#87CEEB' }, { name: 'أخضر باهت', code: '#98FB98' }, { name: 'تيتانيوم صحراوي', code: '#C5B358' }, { name: 'أرجواني ملكي', code: '#7851A9' }, { name: 'أبيض لؤلؤي', code: '#F0EAD6' }];
+        
+        // مصفوفة الـ 100 لون المحدثة
+        const MASTER_COLORS = [
+            { name: 'أزرق سييرا', code: '#97B1C6' }, { name: 'رصاصي داكن', code: '#545452' }, { name: 'ذهبي', code: '#FAE7CF' }, { name: 'فضي', code: '#F1F2ED' }, { name: 'أخضر غابة', code: '#576856' }, { name: 'أزرق', code: '#A0B4C7' }, { name: 'أرجواني', code: '#E5DCEA' }, { name: 'أصفر', code: '#F9E479' }, { name: 'سماء الليل', code: '#1F252E' }, { name: 'ضوء النجوم', code: '#FAF7F2' }, { name: 'أحمر', code: '#BA0C2F' }, { name: 'تيتانيوم طبيعي', code: '#BEBDB8' }, { name: 'تيتانيوم أزرق', code: '#424855' }, { name: 'تيتانيوم أبيض', code: '#F2F1ED' }, { name: 'تيتانيوم أسود', code: '#454442' }, { name: 'برونزي', code: '#CD7F32' }, { name: 'أسود فاحم', code: '#000000' }, { name: 'رمادي فاتح', code: '#D3D3D3' }, { name: 'رمادي متوسط', code: '#808080' }, { name: 'رمادي صخري', code: '#708090' },
+            { name: 'رمادي لؤلؤي', code: '#E5E4E2' }, { name: 'فضي معدني', code: '#C0C0C0' }, { name: 'رمادي بارد', code: '#91A3B0' }, { name: 'رمادي دافئ', code: '#A5A5A5' }, { name: 'أزرق ملكي', code: '#4169E1' }, { name: 'أزرق بحري', code: '#000080' }, { name: 'أزرق فاتح', code: '#ADD8E6' }, { name: 'أزرق نيلي', code: '#4B0082' }, { name: 'أزرق فيروزي', code: '#40E0D0' }, { name: 'أزرق سماوي', code: '#87CEEB' }, { name: 'أزرق مائي', code: '#00FFFF' }, { name: 'أزرق بترولي', code: '#005F6B' }, { name: 'أزرق كوبالت', code: '#0047AB' }, { name: 'أزرق منتصف الليل', code: '#191970' }, { name: 'أخضر زمردي', code: '#50C878' }, { name: 'أخضر ليموني', code: '#32CD32' }, { name: 'أخضر زيتوني', code: '#808000' }, { name: 'أخضر نعناعي', code: '#98FB98' }, { name: 'أخضر داكن', code: '#006400' }, { name: 'أخضر عشبي', code: '#7CFC00' },
+            { name: 'أخضر بحري', code: '#2E8B57' }, { name: 'أخضر فستقي', code: '#93C572' }, { name: 'أخضر غامق جداً', code: '#013220' }, { name: 'أخضر تفاحي', code: '#8DB600' }, { name: 'أحمر قاني', code: '#8B0000' }, { name: 'أحمر مرجاني', code: '#FF7F50' }, { name: 'برتقالي مشرق', code: '#FF8C00' }, { name: 'برتقالي محروق', code: '#CC5500' }, { name: 'أحمر نبيذي', code: '#722F37' }, { name: 'أحمر كرزي', code: '#DE3163' }, { name: 'أحمر طوبي', code: '#B22222' }, { name: 'أحمر ياقوتي', code: '#E0115F' }, { name: 'برتقالي ذهبي', code: '#FFD700' }, { name: 'أحمر وردي', code: '#FF007F' }, { name: 'بنفسجي داكن', code: '#9400D3' }, { name: 'خزامي (لافندر)', code: '#E6E6FA' }, { name: 'وردي فاقع', code: '#FF69B4' }, { name: 'وردي هادئ', code: '#FFB6C1' }, { name: 'أرجواني ملكي', code: '#800080' }, { name: 'بنفسجي فاتح', code: '#DA70D6' },
+            { name: 'وردي مغبر', code: '#C08081' }, { name: 'بنفسجي عنبي', code: '#6F2DA8' }, { name: 'وردي أرجواني', code: '#D16587' }, { name: 'بنفسجي كهربائي', code: '#BF00FF' }, { name: 'بني شوكولاتة', code: '#D2691E' }, { name: 'رملي', code: '#C2B280' }, { name: 'بيج كريمي', code: '#F5F5DC' }, { name: 'بني محروق', code: '#4B3621' }, { name: 'بني جملي', code: '#C19A6B' }, { name: 'بيج فاتح', code: '#F5F5F5' }, { name: 'خشبي', code: '#A67B5B' }, { name: 'بني عسلي', code: '#BA8759' }, { name: 'نحاسي', code: '#B87333' }, { name: 'بيج وردي', code: '#E1C699' }, { name: 'أصفر ليموني فاتح', code: '#FFFACD' }, { name: 'أزرق الثلج', code: '#F0F8FF' }, { name: 'خوخي', code: '#FFDAB9' }, { name: 'نعناعي باهت', code: '#BDFCC9' }, { name: 'بنفسجي باهت', code: '#DCD0FF' }, { name: 'مشمشي', code: '#FBCEB1' },
+            { name: 'أخضر ربيعي', code: '#00FF7F' }, { name: 'وردي لؤلؤي', code: '#FADADD' }, { name: 'سماوي عميق', code: '#00BFFF' }, { name: 'أخضر زيتوني غامق', code: '#556B2F' }, { name: 'ذهبي عتيق', code: '#CFB53B' }, { name: 'فضي معتم', code: '#AAA9AD' }, { name: 'أزرق أطلسي', code: '#20214F' }, { name: 'أرجواني باهت', code: '#967BB6' }, { name: 'أصفر خردلي', code: '#FFDB58' }, { name: 'أخضر زمردي داكن', code: '#046307' }, { name: 'أحمر قرمزي', code: '#DC143C' }, { name: 'أزرق فولاذي', code: '#4682B4' }, { name: 'أصفر ذهبي', code: '#FFCC00' }, { name: 'رمادي غباري', code: '#94812B' }, { name: 'كاكي', code: '#C3B091' }, { name: 'برتقالي مرجاني', code: '#FF7F50' }, { name: 'أزرق سماوي عميق', code: '#007FFF' }, { name: 'وردي مرجاني', code: '#F88379' }, { name: 'بنفسجي صيني', code: '#856088' }, { name: 'أبيض دخاني', code: '#F5F5F5' }
+        ];
 
-        let heroItems = []; let categories = []; let products = []; let cart = []; let currentFilter = 'all';
+        let heroItems = []; let categories = []; let products = []; let cart = []; 
+        let currentFilter = 'all';
+        let maxPrice = 3000000;
 
         async function fetchData() {
-            let { data: catData } = await _supabase.from('categories').select('*');
-            categories = [{ id: 'all', name: 'الكل', emoji: '🌈' }, ...(catData || [])];
-            let { data: prodData } = await _supabase.from('products').select('*');
-            products = prodData || [];
-            let { data: hData } = await _supabase.from('hero_section').select('*').order('id', { ascending: true });
-            heroItems = hData || [];
-            renderAll();
+            try {
+                let { data: catData } = await _supabase.from('categories').select('*');
+                categories = [{ id: 'all', name: 'الكل', emoji: '🌈' }, ...(catData || [])];
+                let { data: prodData } = await _supabase.from('products').select('*').order('id', { ascending: false });
+                products = prodData || [];
+                let { data: hData } = await _supabase.from('hero_section').select('*').order('id', { ascending: true });
+                heroItems = hData || [];
+                renderAll();
+            } catch (e) { console.error("Error fetching data:", e); }
         }
 
         function renderAll() { 
@@ -272,7 +253,7 @@
             renderHeroAdmin(); 
             renderAdminCats(); 
             renderAdminColorPicker(); 
-            renderEmojiPicker();
+            renderEmojiPicker(); 
             renderAdminProductList(); 
             renderTabs(); 
             renderStore(); 
@@ -280,249 +261,228 @@
 
         function renderTabs() { 
             document.getElementById('categories-tabs').innerHTML = categories.map(c => `
-                <button onclick="setFilter('${c.id}')" 
-                    class="category-card group ${currentFilter == c.id ? 'tab-active' : ''}">
-                    <span class="text-3xl transition-transform duration-300 group-hover:scale-110">${c.emoji || '📦'}</span>
+                <button onclick="setFilter('${c.id}')" class="category-card group ${currentFilter == c.id ? 'tab-active' : ''}">
+                    <span class="text-3xl">${c.emoji || '📦'}</span>
                     <span class="text-[11px] font-bold ${currentFilter == c.id ? 'text-white' : 'text-slate-400'}">${c.name}</span>
                 </button>
             `).join(''); 
+        }
+
+        function setFilter(id) { currentFilter = id; renderTabs(); renderStore(); }
+        function updatePriceFilter(val) { maxPrice = parseInt(val); document.getElementById('price-display').innerText = maxPrice >= 3000000 ? "الكل" : "حتى " + maxPrice.toLocaleString() + " د.ع"; renderStore(); }
+
+        function renderStore() {
+            const grid = document.getElementById('products-grid');
+            let filtered = products.filter(p => (currentFilter === 'all' || p.category == currentFilter) && p.price <= maxPrice);
+            
+            grid.innerHTML = filtered.map(p => `
+                <div class="product-card glass-card rounded-[1.5rem] p-4 flex flex-col relative" id="p-card-${p.id}">
+                    <div class="relative rounded-2xl overflow-hidden aspect-square mb-4 bg-slate-800">
+                        <img src="${p.img}" class="w-full h-full object-cover ${!p.stock ? 'opacity-30 grayscale' : ''}">
+                        ${!p.stock ? '<div class="absolute inset-0 flex items-center justify-center font-black text-red-500 text-xl rotate-12 border-2 border-red-500 m-6 rounded-xl">نـافـذ</div>' : ''}
+                    </div>
+                    <h3 class="text-lg font-black text-white mb-2 text-right">${p.name}</h3>
+                    <div class="flex flex-wrap justify-end gap-1 mb-4">
+                        ${p.specs.filter(s => s).map(s => `<span class="bg-slate-800 px-2 py-0.5 rounded text-[10px] text-slate-400 font-bold">${s}</span>`).join('')}
+                    </div>
+                    <div class="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
+                        <span class="text-xl font-black text-blue-500">${p.price.toLocaleString()} <span class="text-[10px]">د.ع</span></span>
+                        <button onclick="addToCart(${p.id})" ${!p.stock ? 'disabled' : ''} class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white active:scale-90 transition disabled:opacity-20"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+            `).join('');
         }
 
         function renderHero() {
             document.getElementById('hero-grid-display').innerHTML = heroItems.map(item => `
                 <div class="hero-item relative rounded-[2.5rem] overflow-hidden group border border-white/5">
                     <img src="${item.img}" class="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                    <div class="absolute top-4 right-4 bg-blue-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase">${item.badge || 'PRO'}</div>
-                    <div class="absolute bottom-6 right-6 left-6">
-                        <h3 class="text-xl font-black text-white group-hover:text-blue-400 transition">${item.title}</h3>
-                        <p class="text-xs text-slate-400 font-bold mt-1">${item.sub}</p>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80"></div>
+                    <div class="absolute bottom-6 right-6 text-right">
+                        <h3 class="text-xl font-black text-white">${item.title}</h3>
+                        <p class="text-xs text-slate-400 font-bold mt-1">${item.sub || ''}</p>
                     </div>
                 </div>
             `).join('');
         }
 
-        function renderStore() {
-            const grid = document.getElementById('products-grid');
-            let filtered = currentFilter === 'all' ? [...products].sort(() => Math.random() - 0.5) : products.filter(p => p.category == currentFilter);
-            grid.innerHTML = filtered.map(p => `
-                <div onclick="openProductModal(${p.id})" class="product-card glass-card rounded-[1.5rem] md:rounded-[2.5rem] p-3 md:p-6 flex flex-col relative" id="p-card-${p.id}">
-                    <div class="relative rounded-xl md:rounded-3xl overflow-hidden aspect-square mb-3 md:mb-6 group bg-slate-800">
-                        <img src="${p.img}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ${!p.stock ? 'opacity-30 grayscale' : ''}">
-                        ${!p.stock ? '<div class="absolute inset-0 flex items-center justify-center font-black text-red-500 text-sm md:text-2xl rotate-12 border-2 md:border-4 border-red-500 m-4 md:m-10 rounded-lg md:rounded-xl">نـافـذ</div>' : ''}
+        function renderAdminProductList() {
+            const list = document.getElementById('admin-product-list');
+            if(!list) return;
+            list.innerHTML = products.map(p => `
+                <div class="bg-black/40 p-4 rounded-2xl border border-slate-800 flex justify-between items-center gap-4">
+                    <div class="flex gap-2">
+                        <button onclick="editProduct(${p.id})" class="text-orange-500 p-2"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteProduct(${p.id})" class="text-red-500 p-2"><i class="fas fa-trash"></i></button>
                     </div>
-                    <div class="flex-1">
-                        <h3 class="text-sm md:text-xl font-black text-white mb-1 md:mb-2 line-clamp-1">${p.name}</h3>
-                        <div class="flex gap-1 mb-2 md:mb-4 overflow-x-auto no-scrollbar">
-                            ${p.specs.filter(s => s).map(s => `<span class="bg-slate-800 px-1.5 py-0.5 rounded-md text-[8px] md:text-[10px] text-slate-400 font-bold whitespace-nowrap">${s}</span>`).join('')}
-                        </div>
+                    <div class="flex items-center gap-3 bg-slate-900/50 p-2 rounded-xl flex-wrap max-w-[150px] justify-end">
+                        ${p.colors.map(c => `
+                            <button onclick="toggleColorStock(${p.id}, '${c.name}')" class="w-4 h-4 rounded-full border ${c.outOfStock ? 'border-red-500 opacity-30' : 'border-green-500'}" style="background-color: ${c.code}" title="${c.name}"></button>
+                        `).join('')}
                     </div>
-                    <div class="flex items-center justify-between pt-2 md:pt-4 border-t border-white/5" onclick="event.stopPropagation()">
-                        <span class="text-sm md:text-2xl font-black text-blue-500">${p.price.toLocaleString()} <span class="text-[8px] md:text-[10px]">د.ع</span></span>
-                        <button onclick="addToCart(${p.id})" ${!p.stock ? 'disabled' : ''} class="w-8 h-8 md:w-12 md:h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-lg md:rounded-xl flex items-center justify-center active:scale-90 transition disabled:opacity-20"><i class="fas fa-plus text-xs md:text-base"></i></button>
+                    <div class="flex-1 text-right">
+                        <p class="font-bold text-white">${p.name}</p>
+                        <p class="text-xs text-blue-400">${p.price.toLocaleString()} د.ع</p>
                     </div>
+                    <img src="${p.img}" class="w-12 h-12 rounded-lg object-cover">
                 </div>
             `).join('');
         }
 
-        /* دالات النافذة الجديدة (Modal Functions) */
-        function openProductModal(id) {
-            const p = products.find(prod => prod.id === id);
-            if(!p) return;
-            const content = document.getElementById('modal-content');
+        async function toggleColorStock(productId, colorName) {
+            const product = products.find(p => p.id === productId);
+            const updatedColors = product.colors.map(c => c.name === colorName ? { ...c, outOfStock: !c.outOfStock } : c);
+            await _supabase.from('products').update({ colors: updatedColors }).eq('id', productId);
+            fetchData();
+        }
+
+        function renderAdminColorPicker() {
+            const container = document.getElementById('color-picker-admin');
+            container.innerHTML = MASTER_COLORS.map((c, idx) => `
+                <div class="relative group">
+                    <input type="checkbox" id="admin-col-${idx}" value='${JSON.stringify(c)}' class="admin-color-chk hidden">
+                    <label for="admin-col-${idx}" class="w-8 h-8 rounded-full border border-white/20 block cursor-pointer transition hover:scale-110" style="background-color: ${c.code}" title="${c.name}"></label>
+                </div>
+            `).join('');
             
-            content.innerHTML = `
-                <div class="rounded-[2rem] overflow-hidden aspect-square bg-slate-800 shadow-2xl">
-                    <img src="${p.img}" class="w-full h-full object-cover ${!p.stock ? 'grayscale opacity-50' : ''}">
-                </div>
-                <div class="flex flex-col justify-center">
-                    <h2 class="text-3xl md:text-5xl font-black text-white mb-4">${p.name}</h2>
-                    <div class="flex flex-wrap gap-2 mb-8">
-                        ${p.specs.filter(s => s).map(s => `<span class="bg-blue-600/10 text-blue-500 border border-blue-500/20 px-4 py-2 rounded-xl text-sm font-bold">${s}</span>`).join('')}
-                    </div>
-                    
-                    <div class="mb-8">
-                        <label class="block text-slate-400 font-bold mb-4">الألوان المتوفرة:</label>
-                        <div class="flex gap-3 flex-wrap" id="modal-colors">
-                            ${p.colors.map((c, idx) => `
-                                <div onclick="${!c.outOfStock ? `selectModalColor('${c.name}', this)` : ''}" 
-                                     class="w-10 h-10 rounded-full border-2 border-white/10 transition-all relative ${idx === 0 && !c.outOfStock ? 'ring-4 ring-blue-500 scale-110' : ''} ${c.outOfStock ? 'opacity-20 cursor-not-allowed' : 'cursor-pointer'}" 
-                                     style="background-color: ${c.code}" data-modal-color="${c.name}">
-                                    ${c.outOfStock ? '<div class="absolute inset-0 flex items-center justify-center"><div class="w-full h-2 bg-red-500 rotate-45"></div></div>' : ''}
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between mt-auto pt-8 border-t border-white/10">
-                        <div>
-                            <p class="text-slate-400 text-sm font-bold mb-1">السعر النقدي</p>
-                            <span class="text-4xl font-black text-blue-500">${p.price.toLocaleString()} <span class="text-lg uppercase">د.ع</span></span>
-                        </div>
-                        <button onclick="addToCart(${p.id}); closeProductModal();" ${!p.stock ? 'disabled' : ''} class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-5 rounded-2xl font-black transition-all flex items-center gap-3 active:scale-95 disabled:opacity-30">
-                            <i class="fas fa-cart-plus text-xl"></i> إضافة للسلة
-                        </button>
-                    </div>
-                </div>
-            `;
-            document.getElementById('product-modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
+            document.querySelectorAll('.admin-color-chk').forEach(chk => {
+                chk.onchange = () => {
+                    chk.nextElementSibling.style.boxShadow = chk.checked ? "0 0 0 3px #3b82f6" : "none";
+                    chk.nextElementSibling.style.borderColor = chk.checked ? "white" : "rgba(255,255,255,0.2)";
+                }
+            });
         }
 
-        function closeProductModal() {
-            document.getElementById('product-modal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
+        async function handleAdminSubmit(e) {
+            e.preventDefault();
+            const editId = document.getElementById('p-id').value;
+            const selectedColors = Array.from(document.querySelectorAll('.admin-color-chk:checked')).map(chk => ({...JSON.parse(chk.value), outOfStock: false}));
+            
+            const productData = {
+                name: document.getElementById('p-name').value,
+                price: parseInt(document.getElementById('p-price').value),
+                category: document.getElementById('p-cat').value,
+                img: document.getElementById('p-img').value,
+                colors: selectedColors,
+                specs: [document.getElementById('p-spec1').value, document.getElementById('p-spec2').value, document.getElementById('p-spec3').value],
+                stock: true
+            };
+
+            if(editId) await _supabase.from('products').update(productData).eq('id', editId);
+            else await _supabase.from('products').insert([productData]);
+            
+            resetProductForm(); fetchData();
         }
 
-        function selectModalColor(name, el) {
-            const parent = document.getElementById('modal-colors');
-            parent.querySelectorAll('[data-modal-color]').forEach(o => o.classList.remove('ring-4', 'ring-blue-500', 'scale-110'));
-            el.classList.add('ring-4', 'ring-blue-500', 'scale-110');
+        function editProduct(id) {
+            const p = products.find(prod => prod.id === id);
+            document.getElementById('p-id').value = p.id;
+            document.getElementById('p-name').value = p.name;
+            document.getElementById('p-price').value = p.price;
+            document.getElementById('p-cat').value = p.category;
+            document.getElementById('p-img').value = p.img;
+            document.getElementById('p-spec1').value = p.specs[0] || '';
+            document.getElementById('p-spec2').value = p.specs[1] || '';
+            document.getElementById('p-spec3').value = p.specs[2] || '';
+            
+            document.querySelectorAll('.admin-color-chk').forEach(chk => {
+                const colorObj = JSON.parse(chk.value);
+                chk.checked = p.colors.some(c => c.name === colorObj.name);
+                chk.onchange();
+            });
+
+            document.getElementById('submit-btn').innerText = "تحديث المنتج";
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+            document.getElementById('admin-panel').scrollTo(0, 0);
         }
 
-        /* نهاية دالات النافذة */
+        async function deleteProduct(id) { if(confirm("حذف المنتج نهائياً؟")) { await _supabase.from('products').delete().eq('id', id); fetchData(); } }
+        function resetProductForm() { document.getElementById('product-form').reset(); document.getElementById('p-id').value = ""; document.getElementById('submit-btn').innerText = "حفظ المنتج"; document.getElementById('cancel-edit-btn').classList.add('hidden'); document.querySelectorAll('.admin-color-chk').forEach(c => {c.checked = false; c.onchange();}); }
 
-        function setFilter(id) { currentFilter = id; renderTabs(); renderStore(); }
         function renderEmojiPicker() {
             const picker = document.getElementById('emoji-picker');
-            const selected = document.getElementById('selected-emoji').value;
-            picker.innerHTML = EMOJI_LIST.map(e => `<div class="emoji-btn ${e === selected ? 'selected' : ''}" onclick="selectEmoji('${e}')">${e}</div>`).join('');
+            picker.innerHTML = EMOJI_LIST.map(e => `<div class="emoji-btn" onclick="selectEmoji('${e}', this)">${e}</div>`).join('');
         }
-        function selectEmoji(e) { document.getElementById('selected-emoji').value = e; renderEmojiPicker(); }
-        async function addCategory() { 
-            const name = document.getElementById('new-cat-name').value.trim(); 
+        function selectEmoji(e, el) { 
+            document.getElementById('selected-emoji').value = e;
+            document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+        async function addCategory() {
+            const name = document.getElementById('new-cat-name').value;
             const emoji = document.getElementById('selected-emoji').value;
-            const editId = document.getElementById('edit-cat-id').value;
             if(!name) return;
-            if(editId) await _supabase.from('categories').update({ name, emoji }).eq('id', editId);
-            else await _supabase.from('categories').insert([{ name, emoji }]); 
-            resetCatForm(); fetchData(); 
+            await _supabase.from('categories').insert([{ name, emoji }]);
+            document.getElementById('new-cat-name').value = ""; fetchData();
         }
         function renderAdminCats() {
-            document.getElementById('admin-cat-list').innerHTML = categories.map(c => `
-                <div class="flex justify-between items-center bg-black/30 p-3 px-4 rounded-xl border border-white/5 group">
-                    <div class="flex items-center gap-3"><span class="text-xl">${c.emoji || '📦'}</span><span class="text-sm font-bold">${c.name}</span></div>
-                    ${c.id !== 'all' ? `<div class="flex gap-2"><button onclick="editCategory('${c.id}')" class="text-blue-500 text-xs p-2 hover:bg-blue-500/10 rounded-lg"><i class="fas fa-edit"></i></button><button onclick="deleteCategory('${c.id}')" class="text-red-500 text-xs p-2 hover:bg-red-500/10 rounded-lg"><i class="fas fa-trash"></i></button></div>` : ''}
+            document.getElementById('admin-cat-list').innerHTML = categories.filter(c => c.id !== 'all').map(c => `
+                <div class="flex justify-between items-center bg-black/20 p-2 rounded-lg">
+                    <button onclick="deleteCategory('${c.id}')" class="text-red-500"><i class="fas fa-trash"></i></button>
+                    <span class="text-sm font-bold text-white">${c.emoji} ${c.name}</span>
                 </div>
             `).join('');
             document.getElementById('p-cat').innerHTML = categories.filter(c => c.id !== 'all').map(c => `<option value="${c.id}">${c.name}</option>`).join('');
         }
-        function resetCatForm() {
-            document.getElementById('edit-cat-id').value = ""; document.getElementById('new-cat-name').value = "";
-            document.getElementById('selected-emoji').value = "📦"; document.getElementById('save-cat-btn').innerText = "إضافة قسم جديد";
-            document.getElementById('cancel-cat-edit').classList.add('hidden'); renderEmojiPicker();
+        async function deleteCategory(id) { if(confirm("حذف القسم؟")) { await _supabase.from('categories').delete().eq('id', id); fetchData(); } }
+
+        function renderHeroAdmin() {
+            document.getElementById('hero-admin-list').innerHTML = heroItems.map(h => `
+                <div class="bg-black/30 p-3 rounded-xl flex items-center gap-3">
+                    <input type="text" value="${h.img}" onchange="updateHero(${h.id}, 'img', this.value)" class="flex-1 bg-slate-800 p-2 rounded text-[10px] text-white outline-none">
+                    <p class="text-[10px] text-blue-400 font-bold">صورة ${h.id}</p>
+                </div>
+            `).join('');
         }
-        function editCategory(id) {
-            const cat = categories.find(c => c.id == id); if(!cat) return;
-            document.getElementById('edit-cat-id').value = cat.id; document.getElementById('new-cat-name').value = cat.name;
-            document.getElementById('selected-emoji').value = cat.emoji || '📦'; document.getElementById('save-cat-btn').innerText = "تحديث القسم";
-            document.getElementById('cancel-cat-edit').classList.remove('hidden'); renderEmojiPicker();
-        }
-        async function deleteCategory(id) { if(confirm("حذف القسم؟ سيؤثر هذا على المنتجات المرتبطة به.")) { await _supabase.from('categories').delete().eq('id', id); fetchData(); } }
-        function requestAdmin() { if (prompt("الرمز:") === "1905") document.getElementById('admin-panel').style.display = 'block'; }
-        function closeAdmin() { document.getElementById('admin-panel').style.display = 'none'; resetProductForm(); resetCatForm(); }
+        async function updateHero(id, field, value) { await _supabase.from('hero_section').update({ [field]: value }).eq('id', id); fetchData(); }
+
         function toggleCart() { document.getElementById('cart-drawer').classList.toggle('-translate-x-full'); document.getElementById('overlay').classList.toggle('hidden'); }
-        function openCheckout() { document.getElementById('checkout-modal').classList.remove('hidden'); }
-        function closeCheckout() { document.getElementById('checkout-modal').classList.add('hidden'); }
+        function requestAdmin() { if (prompt("الرمز:") === "1905") document.getElementById('admin-panel').classList.remove('hidden'); }
+        function closeAdmin() { document.getElementById('admin-panel').classList.add('hidden'); }
 
         function addToCart(id) {
             const product = products.find(p => p.id === id);
-            
-            // محاولة جلب اللون المختار من المودال أولاً، ثم من الكرت الأساسي
-            let chosenColor;
-            const modalColorEl = document.querySelector('#modal-colors .ring-blue-500');
-            
-            if(modalColorEl) {
-                chosenColor = modalColorEl.dataset.modalColor;
-            } else {
-                chosenColor = product.colors.find(c => !c.outOfStock)?.name;
-            }
-
-            if(!chosenColor) { alert("هذا المنتج غير متوفر حالياً بأي لون!"); return; }
-            cart.push({...product, cartId: Date.now(), chosenColor}); 
+            const chosenColor = product.colors.find(c => !c.outOfStock)?.name || "افتراضي";
+            cart.push({...product, cartId: Date.now(), chosenColor});
             updateCartUI();
         }
 
         function updateCartUI() {
             document.getElementById('cart-count').innerText = cart.length;
-            const content = document.getElementById('cart-content'); let total = 0;
-            content.innerHTML = cart.map(i => { total += i.price; return `<div class="flex gap-4 bg-slate-900/50 p-4 rounded-2xl border border-white/5 group"><img src="${i.img}" class="w-16 h-16 rounded-xl object-cover"><div class="flex-1 text-sm"><h4 class="font-bold text-white">${i.name}</h4><p class="text-blue-400 text-xs font-bold">${i.chosenColor}</p><p class="font-black mt-1 text-white">${i.price.toLocaleString()} د.ع</p></div><button onclick="removeFromCart(${i.cartId})" class="text-slate-600 hover:text-red-500 transition"><i class="fas fa-trash"></i></button></div>`; }).join('');
+            const content = document.getElementById('cart-content');
+            let total = 0;
+            content.innerHTML = cart.map(i => {
+                total += i.price;
+                return `<div class="flex gap-4 bg-slate-900/50 p-4 rounded-2xl border border-white/5 items-center">
+                    <button onclick="removeFromCart(${i.cartId})" class="text-red-500"><i class="fas fa-trash"></i></button>
+                    <div class="flex-1 text-right">
+                        <h4 class="font-bold text-white">${i.name}</h4>
+                        <p class="text-blue-400 text-xs">${i.chosenColor}</p>
+                        <p class="font-black text-white">${i.price.toLocaleString()} د.ع</p>
+                    </div>
+                    <img src="${i.img}" class="w-16 h-16 rounded-xl object-cover">
+                </div>`;
+            }).join('');
             document.getElementById('cart-total').innerText = total.toLocaleString() + ' د.ع';
             document.getElementById('order-btn').disabled = cart.length === 0;
         }
+
         function removeFromCart(cid) { cart = cart.filter(i => i.cartId !== cid); updateCartUI(); }
+        function openCheckout() { document.getElementById('checkout-modal').classList.remove('hidden'); }
+        function closeCheckout() { document.getElementById('checkout-modal').classList.add('hidden'); }
+
         function finalizeOrder(e) {
             e.preventDefault();
-            const name = document.getElementById('c-name').value, phone = document.getElementById('c-phone').value, address = document.getElementById('c-address').value, total = document.getElementById('cart-total').innerText;
-            let text = `*طلب جديد من متجر NeWcODe*%0A---------------------------%0A🛍️ *قائمة الطلبات:*%0A`;
-            cart.forEach((i, idx) => text += `${idx + 1}- ${i.name} [اللون: ${i.chosenColor}] (${i.price.toLocaleString()} د.ع)%0A`);
-            text += `---------------------------%0A💰 *المجموع الإجمالي:* ${total}%0A%0A👤 *معلومات الزبون:*%0A📍 الاسم: ${name}%0A📞 الهاتف: ${phone}%0A🏠 العنوان: ${address}%0A%0A_تم الإرسال من الموقع_`;
+            const name = document.getElementById('c-name').value;
+            const phone = document.getElementById('c-phone').value;
+            const address = document.getElementById('c-address').value;
+            let text = `*طلب جديد من NeWcODe*%0A---------------------------%0A🛍️ *الطلبات:*%0A`;
+            cart.forEach((i, idx) => text += `${idx + 1}- ${i.name} (${i.price.toLocaleString()} د.ع)%0A`);
+            text += `---------------------------%0Aالمجموع: ${document.getElementById('cart-total').innerText}%0A%0A👤 الزبون: ${name}%0A📞 الهاتف: ${phone}%0A📍 العنوان: ${address}`;
             window.open(`https://wa.me/9647734460390?text=${text}`);
-            cart = []; updateCartUI(); closeCheckout(); if(!document.getElementById('cart-drawer').classList.contains('-translate-x-full')) toggleCart();
-            document.getElementById('order-form').reset();
+            cart = []; updateCartUI(); closeCheckout(); toggleCart();
         }
 
-        function renderHeroAdmin() {
-            document.getElementById('hero-admin-list').innerHTML = heroItems.map((item, idx) => `<div class="bg-black/30 p-4 rounded-2xl border border-white/5 space-y-3"><p class="text-[10px] font-bold text-blue-500">الصورة ${idx + 1}</p><input type="text" onchange="updateHero(${item.id}, 'title', this.value)" value="${item.title}" class="w-full bg-slate-900/50 p-2 rounded-lg text-xs border border-slate-800 text-white outline-none"><input type="text" onchange="updateHero(${item.id}, 'img', this.value)" value="${item.img}" class="w-full bg-slate-900/50 p-2 rounded-lg text-xs border border-slate-800 text-white outline-none"></div>`).join('');
-        }
-        async function updateHero(id, field, value) { await _supabase.from('hero_section').update({ [field]: value }).eq('id', id); fetchData(); }
-        function renderAdminColorPicker() {
-            const container = document.getElementById('color-picker-admin');
-            container.innerHTML = MASTER_COLORS.map((c, idx) => `<div class="relative flex flex-col items-center gap-1"><input type="checkbox" id="color-chk-${idx}" value='${JSON.stringify(c)}' class="color-checkbox hidden"><label for="color-chk-${idx}" class="w-7 h-7 rounded-full border border-white/20 cursor-pointer transition-all hover:scale-110 flex items-center justify-center" style="background-color: ${c.code}"><i class="fas fa-check text-white opacity-0 text-[8px]"></i></label></div>`).join('');
-            document.querySelectorAll('.color-checkbox').forEach(chk => {
-                chk.onchange = () => {
-                    const label = chk.nextElementSibling, icon = label.querySelector('i');
-                    if(chk.checked) { label.classList.add('ring-2', 'ring-blue-500', 'border-white'); icon.classList.remove('opacity-0'); }
-                    else { label.classList.remove('ring-2', 'ring-blue-500', 'border-white'); icon.classList.add('opacity-0'); }
-                };
-            });
-        }
-        async function handleAdminSubmit(e) {
-            e.preventDefault();
-            const editId = document.getElementById('p-id').value, selectedColorNodes = document.querySelectorAll('.color-checkbox:checked');
-            const colors = Array.from(selectedColorNodes).map(node => ({ ...JSON.parse(node.value), outOfStock: false }));
-            if(colors.length === 0) { alert("يرجى اختيار لون واحد على الأقل!"); return; }
-            const productData = { name: document.getElementById('p-name').value, price: parseInt(document.getElementById('p-price').value), category: document.getElementById('p-cat').value, img: document.getElementById('p-img').value, colors: colors, specs: [document.getElementById('p-spec1').value, document.getElementById('p-spec2').value, document.getElementById('p-spec3').value], stock: true };
-            if (editId) await _supabase.from('products').update(productData).eq('id', editId);
-            else await _supabase.from('products').insert([productData]);
-            fetchData(); resetProductForm();
-        }
-        function editProduct(id) {
-            const p = products.find(prod => prod.id === id); if (!p) return;
-            document.getElementById('form-title').innerHTML = `<i class="fas fa-edit text-orange-500"></i> تعديل المنتج: ${p.name}`;
-            document.getElementById('p-id').value = p.id; document.getElementById('p-name').value = p.name;
-            document.getElementById('p-price').value = p.price; document.getElementById('p-cat').value = p.category;
-            document.getElementById('p-img').value = p.img; document.getElementById('p-spec1').value = p.specs[0] || '';
-            document.getElementById('p-spec2').value = p.specs[1] || ''; document.getElementById('p-spec3').value = p.specs[2] || '';
-            document.querySelectorAll('.color-checkbox').forEach(chk => { chk.checked = false; chk.onchange(); });
-            p.colors.forEach(pc => { document.querySelectorAll('.color-checkbox').forEach(chk => { if (JSON.parse(chk.value).name === pc.name) { chk.checked = true; chk.onchange(); } }); });
-            document.getElementById('submit-btn').innerText = "تحديث التغييرات"; document.getElementById('submit-btn').classList.replace('bg-blue-600', 'bg-orange-600');
-            document.getElementById('cancel-edit-btn').classList.remove('hidden'); document.getElementById('admin-panel').scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        function resetProductForm() {
-            document.getElementById('form-title').innerHTML = `<i class="fas fa-plus-circle text-blue-500"></i> إضافة منتج جديد`;
-            document.getElementById('product-form').reset(); document.getElementById('p-id').value = "";
-            document.querySelectorAll('.color-checkbox').forEach(chk => { chk.checked = false; chk.onchange(); });
-            document.getElementById('submit-btn').innerText = "حفظ ونشر المنتج"; document.getElementById('submit-btn').classList.replace('bg-orange-600', 'bg-blue-600');
-            document.getElementById('cancel-edit-btn').classList.add('hidden');
-        }
-        async function toggleColorStock(productId, colorName) {
-            const product = products.find(p => p.id === productId);
-            const updatedColors = product.colors.map(c => c.name === colorName ? { ...c, outOfStock: !c.outOfStock } : c);
-            await _supabase.from('products').update({ colors: updatedColors }).eq('id', productId); fetchData();
-        }
-        function renderAdminProductList() {
-            document.getElementById('admin-product-list').innerHTML = products.map(p => `
-                <div class="bg-black/40 p-5 rounded-3xl border border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div class="flex items-center gap-4"><img src="${p.img}" class="w-16 h-16 rounded-2xl object-cover border border-slate-700"><div><p class="text-lg font-black text-white">${p.name}</p><p class="text-xs text-blue-500 font-bold">${p.price.toLocaleString()} د.ع</p></div></div>
-                    <div class="flex flex-wrap gap-1.5 bg-slate-900/50 p-3 rounded-2xl border border-white/5 max-w-[250px]">${p.colors.map(c => `<button onclick="toggleColorStock(${p.id}, '${c.name}')" class="relative w-6 h-6 rounded-full border transition-all ${c.outOfStock ? 'border-red-500' : 'border-green-500'}" style="background-color: ${c.code}">${c.outOfStock ? '<div class="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full"><i class="fas fa-times text-red-500 text-[8px]"></i></div>' : ''}</button>`).join('')}</div>
-                    <div class="flex gap-2"><button onclick="editProduct(${p.id})" class="bg-orange-500/10 text-orange-500 p-3 rounded-xl hover:bg-orange-500 hover:text-white transition"><i class="fas fa-edit"></i></button><button onclick="toggleStock(${p.id}, ${p.stock})" class="text-[10px] px-4 py-2 rounded-xl font-black ${p.stock ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}">${p.stock ? 'مُتوفر' : 'نـافذ'}</button><button onclick="deleteProduct(${p.id})" class="bg-red-500/10 text-red-500 p-3 rounded-xl hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash"></i></button></div>
-                </div>
-            `).join('');
-        }
-        async function toggleStock(id, current) { await _supabase.from('products').update({ stock: !current }).eq('id', id); fetchData(); }
-        async function deleteProduct(id) { if(confirm("حذف المنتج نهائياً؟")) { await _supabase.from('products').delete().eq('id', id); fetchData(); } }
-        
         window.onload = fetchData;
     </script>
 </body>
