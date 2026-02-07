@@ -78,7 +78,6 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* ستايل تبويبات لوحة التحكم */
         .admin-tab {
             padding: 8px 16px;
             border-radius: 12px;
@@ -110,12 +109,11 @@
                     <div class="bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-800 text-right text-white">
                         <h3 class="text-xl font-bold mb-4 flex items-center justify-end gap-3"><i class="fas fa-tags text-blue-500"></i> إدارة الأقسام</h3>
                         <div class="space-y-4 mb-6 p-4 bg-black/40 rounded-2xl border border-white/5">
-                            <input type="hidden" id="edit-cat-id" value="">
                             <input type="text" id="new-cat-name" placeholder="اسم القسم" class="w-full bg-slate-800 p-3 rounded-xl border border-slate-700 outline-none text-white">
                             <label class="text-xs font-bold text-slate-400 block mb-2">اختر ملصق (Emoji):</label>
                             <div id="emoji-picker" class="emoji-grid no-scrollbar"></div>
                             <input type="hidden" id="selected-emoji" value="📦">
-                            <button id="save-cat-btn" onclick="addCategory()" class="w-full bg-blue-600 py-3 rounded-xl text-white font-bold hover:bg-blue-700 transition">إضافة قسم</button>
+                            <button onclick="addCategory()" class="w-full bg-blue-600 py-3 rounded-xl text-white font-bold hover:bg-blue-700 transition">إضافة قسم</button>
                         </div>
                         <div id="admin-cat-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
                     </div>
@@ -137,8 +135,8 @@
                             <input type="text" id="p-img" placeholder="رابط صورة المنتج" class="bg-black/50 p-4 rounded-2xl border border-slate-800 outline-none text-white focus:border-blue-500" required>
                             
                             <div class="md:col-span-2">
-                                <label class="text-xs font-bold text-slate-400 mb-3 block text-right">اختر الألوان المتوفرة:</label>
-                                <div id="color-picker-admin" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 bg-black/30 p-4 rounded-3xl border border-slate-800 max-h-60 overflow-y-auto"></div>
+                                <label class="text-xs font-bold text-slate-400 mb-3 block text-right">اختر الألوان المتوفرة (200 لون):</label>
+                                <div id="color-picker-admin" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 bg-black/30 p-4 rounded-3xl border border-slate-800 max-h-64 overflow-y-auto"></div>
                             </div>
 
                             <div class="grid grid-cols-3 gap-2 md:col-span-2 mt-2">
@@ -156,8 +154,7 @@
 
                     <div class="bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-800 text-right text-white">
                         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                            <div id="admin-product-tabs" class="flex gap-2 overflow-x-auto no-scrollbar w-full md:w-auto">
-                                </div>
+                            <div id="admin-product-tabs" class="flex gap-2 overflow-x-auto no-scrollbar w-full md:w-auto"></div>
                             <h3 class="text-xl font-bold flex items-center justify-end gap-3 whitespace-nowrap"><i class="fas fa-list text-blue-500"></i> المنتجات الحالية</h3>
                         </div>
                         <div id="admin-product-list" class="space-y-4 max-h-[600px] overflow-y-auto pr-2"></div>
@@ -252,14 +249,75 @@
 
         const EMOJI_LIST = ['📱','💻','🎮','🎧','⌚️','📷','📺','🔋','🖱️','⌨️','🍎','🤖','🔥','⭐','📦','🔌','🛠️','💡','🛍️','💰','📚','✏️','🖋️','🖌️','📏','📁','🏠','🏢','🚗','🚲','👕','👟','👓','⌚','💎','⚽','🏀','🎸','🎵','🎨','🚀','🚁','🛸','🛰️','🌈','🌊','🌍','🍕','☕','🍦'];
         
+        // --- مصفوفة الـ 200 لون ---
         const MASTER_COLORS = [
-            { name: 'أزرق سييرا', code: '#97B1C6' }, { name: 'رصاصي داكن', code: '#545452' }, { name: 'ذهبي', code: '#FAE7CF' }, { name: 'فضي', code: '#F1F2ED' }, { name: 'أخضر غابة', code: '#576856' }, { name: 'أزرق', code: '#A0B4C7' }, { name: 'أرجواني', code: '#E5DCEA' }, { name: 'أصفر', code: '#F9E479' }, { name: 'سماء الليل', code: '#1F252E' }, { name: 'ضوء النجوم', code: '#FAF7F2' }, { name: 'أحمر', code: '#BA0C2F' }, { name: 'تيتانيوم طبيعي', code: '#BEBDB8' }, { name: 'تيتانيوم أزرق', code: '#424855' }, { name: 'تيتانيوم أبيض', code: '#F2F1ED' }, { name: 'تيتانيوم أسود', code: '#454442' }, { name: 'برونزي', code: '#CD7F32' }, { name: 'أسود فاحم', code: '#000000' }, { name: 'رمادي فاتح', code: '#D3D3D3' }, { name: 'رمادي متوسط', code: '#808080' }, { name: 'رمادي صخري', code: '#708090' },
-            { name: 'رمادي لؤلؤي', code: '#E5E4E2' }, { name: 'فضي معدني', code: '#C0C0C0' }, { name: 'رمادي بارد', code: '#91A3B0' }, { name: 'رمادي دافئ', code: '#A5A5A5' }, { name: 'أزرق ملكي', code: '#4169E1' }, { name: 'أزرق بحري', code: '#000080' }, { name: 'أزرق فاتح', code: '#ADD8E6' }, { name: 'أزرق نيلي', code: '#4B0082' }, { name: 'أزرق فيروزي', code: '#40E0D0' }, { name: 'أزرق سماوي', code: '#87CEEB' }, { name: 'أزرق مائي', code: '#00FFFF' }, { name: 'أزرق بترولي', code: '#005F6B' }, { name: 'أزرق كوبالت', code: '#0047AB' }, { name: 'أزرق منتصف الليل', code: '#191970' }, { name: 'أخضر زمردي', code: '#50C878' }, { name: 'أخضر ليموني', code: '#32CD32' }, { name: 'أخضر زيتوني', code: '#808000' }, { name: 'أخضر نعناعي', code: '#98FB98' }, { name: 'أخضر داكن', code: '#006400' }, { name: 'أخضر عشبي', code: '#7CFC00' }
+            // التقنية (Apple/Samsung)
+            { name: 'تيتانيوم طبيعي', code: '#BEBDB8' }, { name: 'تيتانيوم أزرق', code: '#424855' }, { name: 'تيتانيوم أبيض', code: '#F2F1ED' }, { name: 'تيتانيوم أسود', code: '#454442' },
+            { name: 'أزرق سييرا', code: '#97B1C6' }, { name: 'رصاصي داكن', code: '#545452' }, { name: 'ذهبي نقي', code: '#FAE7CF' }, { name: 'فضي معدني', code: '#C0C0C0' },
+            { name: 'أخضر غابة', code: '#576856' }, { name: 'أرجواني عميق', code: '#5E5266' }, { name: 'سماء الليل', code: '#1F252E' }, { name: 'ضوء النجوم', code: '#FAF7F2' },
+            { name: 'برونزي ملكي', code: '#CD7F32' }, { name: 'أسود فاحم', code: '#000000' }, { name: 'أزرق المحيط', code: '#2E5A88' }, { name: 'وردي ذهبي', code: '#B76E79' },
+            // تدرجات الرمادي (20)
+            { name: 'رمادي صخري', code: '#708090' }, { name: 'جرافيت', code: '#383838' }, { name: 'رمادي فاتح', code: '#D3D3D3' }, { name: 'رمادي لؤلؤي', code: '#E5E4E2' },
+            { name: 'فحمي', code: '#36454F' }, { name: 'رمادي دافئ', code: '#A5A5A5' }, { name: 'رمادي بارد', code: '#91A3B0' }, { name: 'أسود مطفي', code: '#28282B' },
+            { name: 'أردواز', code: '#708090' }, { name: 'رمادي حديدي', code: '#434B4D' }, { name: 'فضي معتم', code: '#A9A9A9' }, { name: 'رمادي غيوم', code: '#C4C3D0' },
+            { name: 'بلاتينيوم', code: '#E5E4E2' }, { name: 'رمادي فضي', code: '#C0C0C0' }, { name: 'أبيض ثلجي', code: '#FFFAFA' }, { name: 'أبيض عاجي', code: '#FFFFF0' },
+            { name: 'رمادي لافندر', code: '#BDBBD7' }, { name: 'رمادي أسمنتي', code: '#858585' }, { name: 'رمادي فلكي', code: '#2C2C2C' }, { name: 'فضي ثلجي', code: '#E2E5DE' },
+            // تدرجات الأزرق (40)
+            { name: 'أزرق ملكي', code: '#4169E1' }, { name: 'أزرق بحري', code: '#000080' }, { name: 'أزرق فيروزي', code: '#40E0D0' }, { name: 'أزرق سماوي', code: '#87CEEB' },
+            { name: 'أزرق بترولي', code: '#005F6B' }, { name: 'أزرق كوبالت', code: '#0047AB' }, { name: 'أزرق منتصف الليل', code: '#191970' }, { name: 'أزرق كهربائي', code: '#7DF9FF' },
+            { name: 'أزرق فولاذي', code: '#4682B4' }, { name: 'أزرق طاووس', code: '#003153' }, { name: 'نيلي', code: '#4B0082' }, { name: 'أزرق فاتح جداً', code: '#E0FFFF' },
+            { name: 'أزرق كاديت', code: '#5F9EA0' }, { name: 'أزرق ياقوتي', code: '#0F52BA' }, { name: 'أزرق أكسفورد', code: '#002147' }, { name: 'أزرق مايا', code: '#73C2FB' },
+            { name: 'أزرق بارود', code: '#B0C4DE' }, { name: 'أزرق أدميرال', code: '#212144' }, { name: 'أزرق مائي', code: '#00FFFF' }, { name: 'أزرق قطبي', code: '#E1FFFF' },
+            { name: 'أزرق بروسي', code: '#003153' }, { name: 'أزرق سماوي داكن', code: '#00BFFF' }, { name: 'أزرق كارولينا', code: '#4B9CD3' }, { name: 'أزرق ييل', code: '#00356B' },
+            { name: 'أزرق دلفين', code: '#5C789E' }, { name: 'أزرق نيون', code: '#1F51FF' }, { name: 'أزرق ياقوت داكن', code: '#082567' }, { name: 'أزرق سماوي فاتح', code: '#CCEEFF' },
+            { name: 'أزرق كامبريدج', code: '#A3C1AD' }, { name: 'أزرق عميق', code: '#00008B' }, { name: 'أزرق فاتح مائي', code: '#F0FFFF' }, { name: 'أزرق ليلي', code: '#111E6C' },
+            { name: 'أزرق مالح', code: '#4E5D6C' }, { name: 'أزرق مغبر', code: '#94A3B8' }, { name: 'أزرق ملكي فاتح', code: '#859FD1' }, { name: 'أزرق كابري', code: '#00BFFF' },
+            { name: 'أزرق سماوي نقي', code: '#007FFF' }, { name: 'أزرق مائي عميق', code: '#00CED1' }, { name: 'أزرق جينز', code: '#5D76CB' }, { name: 'أزرق لؤلؤي', code: '#B2FFFF' },
+            // تدرجات الأخضر (40)
+            { name: 'أخضر زمردي', code: '#50C878' }, { name: 'أخضر ليموني', code: '#32CD32' }, { name: 'أخضر زيتوني', code: '#808000' }, { name: 'أخضر نعناعي', code: '#98FB98' },
+            { name: 'أخضر داكن', code: '#006400' }, { name: 'أخضر عشبي', code: '#7CFC00' }, { name: 'أخضر غابة عميق', code: '#228B22' }, { name: 'أخضر بحري', code: '#2E8B57' },
+            { name: 'فستقي', code: '#93C572' }, { name: 'أخضر طحلبي', code: '#8A9A5B' }, { name: 'أخضر جيشي', code: '#4B5320' }, { name: 'أخضر تيفاني', code: '#0ABAB5' },
+            { name: 'أخضر زمردي داكن', code: '#043927' }, { name: 'أخضر تفاحي', code: '#8DB600' }, { name: 'أخضر باهت', code: '#98FB98' }, { name: 'أخضر لؤلؤي', code: '#88D8C0' },
+            { name: 'أخضر سحلي', code: '#00FF00' }, { name: 'أخضر زيتوني غامق', code: '#556B2F' }, { name: 'أخضر كيوي', code: '#8EE53F' }, { name: 'أخضر صنوبر', code: '#01796F' },
+            { name: 'أخضر فيروزي داكن', code: '#008B8B' }, { name: 'أخضر ربيعي', code: '#00FF7F' }, { name: 'أخضر السرخس', code: '#4F7942' }, { name: 'أخضر كلوفر', code: '#3C6921' },
+            { name: 'أخضر تمساح', code: '#607D3B' }, { name: 'أخضر ليموني غامق', code: '#00FF00' }, { name: 'أخضر بري', code: '#A52A2A' }, { name: 'أخضر مرجاني', code: '#40E0D0' },
+            { name: 'أخضر نيون', code: '#39FF14' }, { name: 'أخضر مينت', code: '#BDFCC9' }, { name: 'أخضر تفاحي فاتح', code: '#E2F2D5' }, { name: 'أخضر مائي باهت', code: '#AFEEEE' },
+            { name: 'أخضر لبلاب', code: '#304F34' }, { name: 'أخضر يشم', code: '#00A86B' }, { name: 'أخضر غابة فاتح', code: '#D0F0C0' }, { name: 'أخضر ملخيت', code: '#0BDA51' },
+            { name: 'أخضر غابة بري', code: '#228B22' }, { name: 'أخضر مريمية', code: '#BCB88A' }, { name: 'أخضر موحلي', code: '#465231' }, { name: 'أخضر زمردي مشرق', code: '#00FF40' },
+            // تدرجات الأحمر والبرتقالي (30)
+            { name: 'أحمر ناري', code: '#FF0000' }, { name: 'أحمر غامق', code: '#8B0000' }, { name: 'أحمر قرمزي', code: '#DC143C' }, { name: 'أحمر ياقوتي', code: '#E0115F' },
+            { name: 'طوبي', code: '#B22222' }, { name: 'عنابي', code: '#800000' }, { name: 'برتقالي مشرق', code: '#FF8C00' }, { name: 'مرجاني', code: '#FF7F50' },
+            { name: 'برتقالي محروق', code: '#CC5500' }, { name: 'مشمشي', code: '#FBCEB1' }, { name: 'خوخي', code: '#FFE5B4' }, { name: 'أحمر كرزي', code: '#D2042D' },
+            { name: 'أحمر دموي', code: '#660000' }, { name: 'برتقالي ذهبي', code: '#FFA500' }, { name: 'مرجاني غامق', code: '#CD5B45' }, { name: 'أحمر صدأ', code: '#B7410E' },
+            { name: 'أحمر بركان', code: '#FF4500' }, { name: 'برتقالي نيون', code: '#FF5F1F' }, { name: 'أحمر غجري', code: '#A20245' }, { name: 'أحمر لافا', code: '#CF1020' },
+            { name: 'أحمر كاردينال', code: '#C41E3A' }, { name: 'أحمر فراولة', code: '#FC5A8D' }, { name: 'أحمر ياقوت صيني', code: '#AA381E' }, { name: 'أحمر وردي غامق', code: '#C71585' },
+            { name: 'برتقالي ماندارين', code: '#F37A48' }, { name: 'برتقالي يقطين', code: '#FF7518' }, { name: 'أحمر طماطم', code: '#FF6347' }, { name: 'أحمر غامق مرجاني', code: '#E9967A' },
+            { name: 'برتقالي صيفي', code: '#FFBD88' }, { name: 'أحمر خشب', code: '#855E42' },
+            // تدرجات الأصفر والبني (30)
+            { name: 'أصفر ليموني', code: '#FFF44F' }, { name: 'أصفر خردلي', code: '#FFDB58' }, { name: 'ذهبي معتق', code: '#CFB53B' }, { name: 'بني شوكولاتة', code: '#7B3F00' },
+            { name: 'بني فاتح', code: '#D2B48C' }, { name: 'بيج', code: '#F5F5DC' }, { name: 'رملي', code: '#C2B280' }, { name: 'بني محروق', code: '#3D2B1F' },
+            { name: 'عسلي', code: '#E49B0F' }, { name: 'كراميل', code: '#C68E17' }, { name: 'بني قهوة', code: '#6F4E37' }, { name: 'بني كستنائي', code: '#954535' },
+            { name: 'أصفر كناري', code: '#FFFFED' }, { name: 'أصفر ذهبي', code: '#FFD700' }, { name: 'بني ترابي', code: '#964B00' }, { name: 'بيج كريمي', code: '#FFFDD0' },
+            { name: 'أصفر مشرق', code: '#FFFF00' }, { name: 'بني برونزي', code: '#A57164' }, { name: 'بني غامق', code: '#3B2F2F' }, { name: 'أصفر عسلي', code: '#FFC000' },
+            { name: 'بني جملي', code: '#C19A6B' }, { name: 'بني موكا', code: '#967969' }, { name: 'بيج داكن', code: '#918151' }, { name: 'أصفر ذرة', code: '#FBEC5D' },
+            { name: 'بني خشب ساج', code: '#593E30' }, { name: 'بني اسبريسو', code: '#3E2723' }, { name: 'بيج رملي فاتح', code: '#FAF9F6' }, { name: 'ذهبي باهت', code: '#E6BE8A' },
+            { name: 'بني قرفة', code: '#D2691E' }, { name: 'أصفر خريف', code: '#E29105' },
+            // تدرجات الأرجواني والوردي (40)
+            { name: 'أرجواني ملكي', code: '#7851A9' }, { name: 'لافندر', code: '#E6E6FA' }, { name: 'بنفسجي', code: '#8F00FF' }, { name: 'وردي فاقع', code: '#FF69B4' },
+            { name: 'وردي فاتح', code: '#FFB6C1' }, { name: 'موف', code: '#E0B0FF' }, { name: 'أرجواني غامق', code: '#301934' }, { name: 'وردي مغبر', code: '#C291A4' },
+            { name: 'أرجواني فاتح', code: '#D8BFD8' }, { name: 'بنفسجي داكن', code: '#483D8B' }, { name: 'فوشيا', code: '#FF00FF' }, { name: 'وردي لؤلؤي', code: '#FADADD' },
+            { name: 'توتي', code: '#8A2BE2' }, { name: 'أرجواني عنبي', code: '#6F2DA8' }, { name: 'وردي نيون', code: '#FF1493' }, { name: 'أرجواني سحلي', code: '#DA70D6' },
+            { name: 'وردي باربي', code: '#DA1884' }, { name: 'أرجواني باهت', code: '#AA98A9' }, { name: 'بنفسجي ليلي', code: '#2E0854' }, { name: 'وردي مرجاني', code: '#F88379' },
+            { name: 'أرجواني مشرق', code: '#BF00FF' }, { name: 'بنفسجي لؤلؤي', code: '#702963' }, { name: 'وردي باستيل', code: '#FFD1DC' }, { name: 'وردي ساخن', code: '#FF007F' },
+            { name: 'أرجواني مخملي', code: '#4B0082' }, { name: 'بنفسجي بري', code: '#D473D4' }, { name: 'وردي عميق', code: '#FF1493' }, { name: 'أرجواني هادئ', code: '#B784A7' },
+            { name: 'بنفسجي ملكي داكن', code: '#5D3FD3' }, { name: 'وردي فاتح جداً', code: '#FFF0F5' }, { name: 'أرجواني نبيذي', code: '#722F37' }, { name: 'وردي ناعم', code: '#FFC0CB' },
+            { name: 'أرجواني امبراطوري', code: '#602F6B' }, { name: 'بنفسجي كادميوم', code: '#090B47' }, { name: 'وردي فلامنجو', code: '#FC8EAC' }, { name: 'أرجواني باذنجاني', code: '#311432' },
+            { name: 'وردي خجول', code: '#DE5D83' }, { name: 'بنفسجي بنفسجي', code: '#4C2882' }, { name: 'وردي مغربي', code: '#FF6347' }, { name: 'أرجواني خزامى', code: '#967BB6' }
         ];
 
         let heroItems = []; let categories = []; let products = []; let cart = []; 
         let currentFilter = 'all';
-        let adminCurrentFilter = 'all'; // فلتر لوحة التحكم
+        let adminCurrentFilter = 'all'; 
         let maxPrice = 3000000;
         let selectedColorForCart = null;
 
@@ -281,13 +339,12 @@
             renderAdminCats(); 
             renderAdminColorPicker(); 
             renderEmojiPicker(); 
-            renderAdminProductTabs(); // تحديث التبويبات في الأدمن
+            renderAdminProductTabs(); 
             renderAdminProductList(); 
             renderTabs(); 
             renderStore(); 
         }
 
-        // --- تبويبات لوحة التحكم ---
         function renderAdminProductTabs() {
             const container = document.getElementById('admin-product-tabs');
             if(!container) return;
@@ -307,10 +364,7 @@
         function renderAdminProductList() {
             const list = document.getElementById('admin-product-list');
             if(!list) return;
-            
-            // فلترة المنتجات حسب القسم المختار في الأدمن
             let filteredAdmin = products.filter(p => adminCurrentFilter === 'all' || p.category == adminCurrentFilter);
-
             list.innerHTML = filteredAdmin.map(p => `
                 <div class="bg-black/40 p-4 rounded-2xl border border-slate-800 flex justify-between items-center gap-4">
                     <div class="flex gap-2">
@@ -331,11 +385,9 @@
             `).join('');
         }
 
-        // --- عرض المتجر وتفاصيل المنتج ---
         function renderStore() {
             const grid = document.getElementById('products-grid');
             let filtered = products.filter(p => (currentFilter === 'all' || p.category == currentFilter) && p.price <= maxPrice);
-            
             grid.innerHTML = filtered.map(p => `
                 <div onclick="openProductModal(${p.id})" class="product-card glass-card rounded-[1.5rem] p-4 flex flex-col relative group">
                     <div class="relative rounded-2xl overflow-hidden aspect-square mb-4 bg-slate-800">
@@ -402,7 +454,6 @@
 
         function closeProductModal() { document.getElementById('product-modal').classList.add('hidden'); document.body.style.overflow = 'auto'; }
 
-        // --- باقي الوظائف (السلة، الأقسام، الأدمن) ---
         function renderTabs() { 
             document.getElementById('categories-tabs').innerHTML = categories.map(c => `
                 <button onclick="setFilter('${c.id}')" class="category-card group ${currentFilter == c.id ? 'tab-active' : ''}">
