@@ -22,7 +22,17 @@
             background-color: var(--dark-bg);
             color: #f3f4f6;
             overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
         }
+
+        /* أنماط الوضع الفاتح */
+        body.light-mode {
+            --dark-bg: #f3f4f6;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            color: #1f2937;
+        }
+        body.light-mode .product-card h3 { color: #111827; }
+        body.light-mode .category-card:not(.tab-active) { background: #fff; color: #4b5563; }
 
         .glass-card {
             background: var(--card-bg);
@@ -58,6 +68,7 @@
             border-color: var(--primary);
             box-shadow: 0 15px 30px rgba(59, 130, 246, 0.3);
             transform: translateY(-5px);
+            color: white;
         }
 
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
@@ -181,12 +192,19 @@
                 </div>
                 <h1 class="text-2xl font-black tracking-tighter">NE<span class="text-blue-500">WcODe</span></h1>
             </div>
-            <button onclick="toggleCart()" class="relative group text-white">
-                <div class="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center group-hover:bg-blue-600 transition-all">
-                    <i class="fas fa-shopping-bag text-lg"></i>
-                </div>
-                <span id="cart-count" class="absolute -top-1 -right-1 bg-blue-500 text-[10px] w-6 h-6 rounded-full flex items-center justify-center border-2 border-slate-900 font-bold">0</span>
-            </button>
+            
+            <div class="flex items-center gap-3">
+                <button onclick="toggleTheme()" class="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center hover:bg-blue-600 transition-all text-white">
+                    <i id="theme-icon" class="fas fa-moon"></i>
+                </button>
+
+                <button onclick="toggleCart()" class="relative group text-white">
+                    <div class="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center group-hover:bg-blue-600 transition-all">
+                        <i class="fas fa-shopping-bag text-lg"></i>
+                    </div>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-blue-500 text-[10px] w-6 h-6 rounded-full flex items-center justify-center border-2 border-slate-900 font-bold">0</span>
+                </button>
+            </div>
         </div>
     </header>
 
@@ -250,42 +268,33 @@
         const EMOJI_LIST = ['📱','💻','🎮','🎧','⌚️','📷','📺','🔋','🖱️','⌨️','🍎','🤖','🔥','⭐','📦','🔌','🛠️','💡','🛍️','💰','📚','✏️','🖋️','🖌️','📏','📁','🏠','🏢','🚗','🚲','👕','👟','👓','⌚','💎','⚽','🏀','🎸','🎵','🎨','🚀','🚁','🛸','🛰️','🌈','🌊','🌍','🍕','☕','🍦'];
         
         const MASTER_COLORS = [
-            // التقنيات (آيفون وسامسونج)
             { name: 'تيتانيوم طبيعي', code: '#BEBDB8' }, { name: 'تيتانيوم أزرق', code: '#424855' }, { name: 'تيتانيوم أبيض', code: '#F2F1ED' }, { name: 'تيتانيوم أسود', code: '#454442' },
             { name: 'أزرق سييرا', code: '#97B1C6' }, { name: 'رصاصي داكن', code: '#545452' }, { name: 'ذهبي نقي', code: '#FAE7CF' }, { name: 'فضي معدني', code: '#C0C0C0' },
             { name: 'أخضر غابة', code: '#576856' }, { name: 'أرجواني عميق', code: '#5E5266' }, { name: 'سماء الليل', code: '#1F252E' }, { name: 'ضوء النجوم', code: '#FAF7F2' },
             { name: 'برونزي ملكي', code: '#CD7F32' }, { name: 'أسود فاحم', code: '#000000' }, { name: 'أزرق المحيط', code: '#2E5A88' }, { name: 'وردي ذهبي', code: '#B76E79' },
             { name: 'أبيض ثلجي', code: '#FFFAFA' }, { name: 'رمادي فلكي', code: '#2C2C2C' }, { name: 'كحلي عميق', code: '#152238' }, { name: 'أخضر ميدنايت', code: '#4B5335' },
             { name: 'أحمر برودكت', code: '#E11D48' }, { name: 'أصفر ليموني', code: '#FDFFB6' }, { name: 'بنفسجي فاتح', code: '#E2CBFF' }, { name: 'أزرق سماوي', code: '#CAF0F8' },
-            // تدرجات الرمادي والأسود
             { name: 'رمادي صخري', code: '#708090' }, { name: 'جرافيت', code: '#383838' }, { name: 'رمادي فاتح', code: '#D3D3D3' }, { name: 'فحمي', code: '#36454F' },
             { name: 'أسود مطفي', code: '#28282B' }, { name: 'بلاتينيوم', code: '#E5E4E2' }, { name: 'رمادي حديدي', code: '#43464B' }, { name: 'أسود لؤلؤي', code: '#0D0D0D' },
             { name: 'فضي لامع', code: '#E3E4E5' }, { name: 'رصاصي دخاني', code: '#738276' }, { name: 'أسود زيتوني', code: '#1B1B1B' }, { name: 'فضي باهت', code: '#A9A9A9' },
-            // تدرجات الأزرق
             { name: 'أزرق ملكي', code: '#4169E1' }, { name: 'أزرق بحري', code: '#000080' }, { name: 'فيروزي', code: '#40E0D0' }, { name: 'أزرق سماوي داكن', code: '#0077B6' },
             { name: 'أزرق نيلي', code: '#4B0082' }, { name: 'أزرق كهربائي', code: '#7DF9FF' }, { name: 'أزرق جليدي', code: '#A5D8FF' }, { name: 'أزرق باستيل', code: '#B2CEFE' },
             { name: 'أزرق بترولي', code: '#005F73' }, { name: 'أزرق ياقوتي', code: '#0F52BA' }, { name: 'أزرق كوبالت', code: '#0047AB' }, { name: 'أزرق أكسفورد', code: '#002147' },
-            // تدرجات الأخضر
             { name: 'أخضر زمردي', code: '#50C878' }, { name: 'أخضر نعناعي', code: '#98FF98' }, { name: 'أخضر زيتوني', code: '#808000' }, { name: 'أخضر غامق', code: '#013220' },
             { name: 'أخضر ليموني حامض', code: '#32CD32' }, { name: 'أخضر فستقي', code: '#93C572' }, { name: 'أخضر غابة مطيرة', code: '#00402E' }, { name: 'أخضر تفاحي', code: '#8DB600' },
             { name: 'أخضر مرجاني', code: '#2E8B57' }, { name: 'أخضر مريمي', code: '#BCB88A' }, { name: 'أخضر طحلبي', code: '#8A9A5B' }, { name: 'أخضر نيون', code: '#39FF14' },
-            // تدرجات الأحمر والوردي
             { name: 'أحمر ناري', code: '#FF0000' }, { name: 'أحمر قرمزي', code: '#DC143C' }, { name: 'أحمر نبيذي', code: '#722F37' }, { name: 'أحمر داكن', code: '#8B0000' },
             { name: 'وردي فاقع', code: '#FF69B4' }, { name: 'وردي فاتح', code: '#FFB6C1' }, { name: 'أرجواني', code: '#800080' }, { name: 'مارون', code: '#800000' },
             { name: 'وردي خوخي', code: '#FFDAB9' }, { name: 'وردي باليه', code: '#F2D2BD' }, { name: 'أحمر كرزي', code: '#D2042D' }, { name: 'وردي مرجاني', code: '#F88379' },
-            // تدرجات الأصفر والبرتقالي
             { name: 'أصفر ذهبي', code: '#FFD700' }, { name: 'برتقالي شمسي', code: '#FF8C00' }, { name: 'أصفر كناري', code: '#FFEF00' }, { name: 'برتقالي محروق', code: '#CC5500' },
             { name: 'أصفر باستيل', code: '#FDFD96' }, { name: 'مشمشي', code: '#FBCEB1' }, { name: 'خردلي', code: '#FFDB58' }, { name: 'برتقالي مرجاني', code: '#FF7F50' },
             { name: 'برتقالي نيون', code: '#FF5F1F' }, { name: 'ذهبي عتيق', code: '#CFB53B' }, { name: 'أصفر كهرماني', code: '#FFBF00' }, { name: 'أصفر رملي', code: '#F4A460' },
-            // تدرجات البني والترابي
             { name: 'بني شوكولاتة', code: '#7B3F00' }, { name: 'بيج', code: '#F5F5DC' }, { name: 'بني جملي', code: '#C19A6B' }, { name: 'بني قهوة', code: '#6F4E37' },
             { name: 'خاكي', code: '#C3B091' }, { name: 'تراكوتا', code: '#E2725B' }, { name: 'بني محروق', code: '#3D2B1F' }, { name: 'بيج كريمي', code: '#FFFDD0' },
             { name: 'برونزي', code: '#CD7F32' }, { name: 'نحاسي', code: '#B87333' }, { name: 'رمال ناعمة', code: '#EDC9AF' }, { name: 'بني كستنائي', code: '#954535' },
-            // ألوان الباستيل والهادئة
             { name: 'بنفسجي لافندر', code: '#E6E6FA' }, { name: 'أزرق سماوي فاتح', code: '#87CEFA' }, { name: 'أخضر نعناعي باهت', code: '#F5FFFA' }, { name: 'أصفر ليموني فاتح', code: '#FFFACD' },
             { name: 'ليلكي', code: '#C8A2C8' }, { name: 'موف', code: '#E0B0FF' }, { name: 'أزرق بودرة', code: '#B0E0E6' }, { name: 'أبيض لؤلؤي', code: '#FBFCF8' },
             { name: 'وردي غباري', code: '#D8A1A3' }, { name: 'رمادي لؤلؤي', code: '#E5E4E2' }, { name: 'أزرق هادئ', code: '#9AB973' }, { name: 'بيج حليب', code: '#F0EAD6' },
-            // إضافة ألوان إضافية لتصل لـ 200 (نتابع بتدرجات واشتقاقات دقيقة)
             { name: 'أرجواني ملكي', code: '#7851A9' }, { name: 'أزرق سماوي عميق', code: '#00BFFF' }, { name: 'أخضر بحري غامق', code: '#8FBC8F' }, { name: 'بنفسجي باهت', code: '#9370DB' },
             { name: 'أزرق منتصف الليل', code: '#191970' }, { name: 'وردي حار', code: '#FF1493' }, { name: 'أصفر ليموني مشرق', code: '#E3FF00' }, { name: 'أخضر نيون باهت', code: '#CCFF00' },
             { name: 'أزرق فولاذي', code: '#4682B4' }, { name: 'أبيض عاجي', code: '#FFFFF0' }, { name: 'أزرق سماوي فاتح جدا', code: '#F0F8FF' }, { name: 'أخضر ربيعي', code: '#00FF7F' },
@@ -347,6 +356,56 @@
             renderStore(); 
         }
 
+        // دالة لخلط المصفوفة عشوائياً
+        function shuffleProducts(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function renderStore() {
+            const grid = document.getElementById('products-grid');
+            let filtered = products.filter(p => (currentFilter === 'all' || p.category == currentFilter) && p.price <= maxPrice);
+            
+            // إذا كان الفلتر "الكل"، يتم خلط المنتجات عشوائياً
+            if (currentFilter === 'all') {
+                filtered = shuffleProducts([...filtered]);
+            }
+
+            grid.innerHTML = filtered.map(p => `
+                <div onclick="openProductModal(${p.id})" class="product-card glass-card rounded-[1.5rem] p-4 flex flex-col relative group">
+                    <div class="relative rounded-2xl overflow-hidden aspect-square mb-4 bg-slate-800">
+                        <img src="${p.img}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${!p.stock ? 'opacity-30 grayscale' : ''}">
+                        ${!p.stock ? '<div class="absolute inset-0 flex items-center justify-center font-black text-red-500 text-xl rotate-12 border-2 border-red-500 m-6 rounded-xl">نـافـذ</div>' : ''}
+                    </div>
+                    <h3 class="text-lg font-black mb-2 text-right">${p.name}</h3>
+                    <div class="flex flex-wrap justify-end gap-1 mb-4">
+                        ${p.specs.filter(s => s).map(s => `<span class="bg-slate-800 px-2 py-0.5 rounded text-[10px] text-slate-400 font-bold">${s}</span>`).join('')}
+                    </div>
+                    <div class="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
+                        <span class="text-xl font-black text-blue-500">${p.price.toLocaleString()} <span class="text-[10px]">د.ع</span></span>
+                        <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white"><i class="fas fa-eye"></i></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            body.classList.toggle('light-mode');
+            
+            if(body.classList.contains('light-mode')) {
+                icon.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                icon.classList.replace('fa-sun', 'fa-moon');
+            }
+        }
+
         function renderAdminProductTabs() {
             const container = document.getElementById('admin-product-tabs');
             if(!container) return;
@@ -387,27 +446,6 @@
             `).join('');
         }
 
-        function renderStore() {
-            const grid = document.getElementById('products-grid');
-            let filtered = products.filter(p => (currentFilter === 'all' || p.category == currentFilter) && p.price <= maxPrice);
-            grid.innerHTML = filtered.map(p => `
-                <div onclick="openProductModal(${p.id})" class="product-card glass-card rounded-[1.5rem] p-4 flex flex-col relative group">
-                    <div class="relative rounded-2xl overflow-hidden aspect-square mb-4 bg-slate-800">
-                        <img src="${p.img}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${!p.stock ? 'opacity-30 grayscale' : ''}">
-                        ${!p.stock ? '<div class="absolute inset-0 flex items-center justify-center font-black text-red-500 text-xl rotate-12 border-2 border-red-500 m-6 rounded-xl">نـافـذ</div>' : ''}
-                    </div>
-                    <h3 class="text-lg font-black text-white mb-2 text-right">${p.name}</h3>
-                    <div class="flex flex-wrap justify-end gap-1 mb-4">
-                        ${p.specs.filter(s => s).map(s => `<span class="bg-slate-800 px-2 py-0.5 rounded text-[10px] text-slate-400 font-bold">${s}</span>`).join('')}
-                    </div>
-                    <div class="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
-                        <span class="text-xl font-black text-blue-500">${p.price.toLocaleString()} <span class="text-[10px]">د.ع</span></span>
-                        <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white"><i class="fas fa-eye"></i></div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
         function openProductModal(id) {
             const p = products.find(prod => prod.id === id);
             if (!p) return;
@@ -421,7 +459,7 @@
                 <div class="text-right flex flex-col text-white">
                     <div class="mb-6">
                         <span class="bg-blue-600/20 text-blue-400 px-4 py-1 rounded-full text-xs font-bold">تفاصيل المنتج</span>
-                        <h2 class="text-3xl font-black text-white mt-4">${p.name}</h2>
+                        <h2 class="text-3xl font-black mt-4">${p.name}</h2>
                         <p class="text-3xl font-black text-blue-500 mt-2">${p.price.toLocaleString()} د.ع</p>
                     </div>
                     <div class="space-y-4 mb-8">
@@ -498,9 +536,9 @@
                 return `<div class="flex gap-4 bg-slate-900/50 p-4 rounded-2xl border border-white/5 items-center text-white">
                     <button onclick="removeFromCart(${i.cartId})" class="text-red-500"><i class="fas fa-trash"></i></button>
                     <div class="flex-1 text-right">
-                        <h4 class="font-bold text-white">${i.name}</h4>
+                        <h4 class="font-bold">${i.name}</h4>
                         <p class="text-blue-400 text-xs">${i.chosenColor}</p>
-                        <p class="font-black text-white">${i.price.toLocaleString()} د.ع</p>
+                        <p class="font-black">${i.price.toLocaleString()} د.ع</p>
                     </div>
                     <img src="${i.img}" class="w-16 h-16 rounded-xl object-cover">
                 </div>`;
